@@ -44,6 +44,9 @@ dependencies {
 
     implementation("androidx.compose.foundation:foundation-layout-android:1.7.5")
     implementation("com.google.firebase:firebase-inappmessaging-display:21.0.1")
+    implementation(libs.androidx.legacy.support.v4)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     // Room
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")

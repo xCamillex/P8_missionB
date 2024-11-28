@@ -1,10 +1,11 @@
-package com.openclassrooms.p8_vitesse
+package com.openclassrooms.p8_vitesse.ui
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.openclassrooms.p8_vitesse.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
