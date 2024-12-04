@@ -6,26 +6,40 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.openclassrooms.p8_vitesse.R
+import com.openclassrooms.p8_vitesse.databinding.FragmentAddOrEditScreenBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddOrEditScreenFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = AddOrEditScreenFragment()
-    }
+    private var _binding: FragmentAddOrEditScreenBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: AddOrEditScreenViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAddOrEditScreenBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_add_or_edit_screen, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // TODO: Ajouter l'action du bouton "saveButton" après avoir créé le fichier XML
+        /*
+        binding.saveButton.setOnClickListener {
+            val candidate = // Récupérez les données du formulaire
+            viewModel.saveCandidate(candidate)
+        }
+        */
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
