@@ -9,4 +9,6 @@
     <color name="colorSecondary">#E8B952</color>
     <color name="colorSecondaryVariant">#E8B952</color>
     <color name="colorOnSecondary">#FFFFFF</color>
+    <color name="Purple">#DFD5EC</color>
+    <color name="primary">#6750A4</color>
 </resources>

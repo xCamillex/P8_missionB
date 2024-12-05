@@ -1,16 +1,16 @@
-<resources xmlns:tools="http://schemas.android.com/tools">>
-    <string name="app_name" tools:ignore="MissingTranslation">P8_vitesse</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="search_hint">Rechercher un candidat</string>
-    <string name="tab_all">Tous</string>
-    <string name="tab_favorites">Favoris</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tab_all">All</string>
+    <string name="tab_favorites">Favorites</string>
+
+    <string name="search_hint">Search</string>
     <string name="candidate_note_placeholder">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.</string>
     <string name="candidate_name_placeholder">Prénom NOM</string>
     <string name="candidate_photo">photo du candidat</string>
     <string name="empty_state_message">Aucun candidat</string>
     <string name="detail_screen_title">Ajouter un candidat</string>
     <string name="add_candidate">Ajouter un candidat</string>
-    <string name="edit_candidate">Modifier un candidat</string>
+    <string name="edit_candidate">Ajouter un candidat</string>
     <string name="first_name">Prénom</string>
     <string name="first_name_icon">icone prenom</string>
     <string name="last_name">Nom</string>
