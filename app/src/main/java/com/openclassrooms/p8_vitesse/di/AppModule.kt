@@ -3,6 +3,8 @@ package com.openclassrooms.p8_vitesse.di
 import android.content.Context
 import androidx.room.Room
 import com.openclassrooms.p8_vitesse.data.database.AppDatabase
+import com.openclassrooms.p8_vitesse.data.repository.CandidateRepository
+import com.openclassrooms.p8_vitesse.data.repository.CandidateRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

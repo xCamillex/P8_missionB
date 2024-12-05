@@ -14,6 +14,17 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(private val repository: CandidateRepository): ViewModel() {
 
+    // État du filtre (Tous ou Favoris)
+    private val _filter = MutableStateFlow(FilterType.ALL)
+    val filter: StateFlow<FilterType> = _filter
+    // Liste des candidats filtrés
+    val filteredCandidates = _filter.flatMapLatest { filterType ->
+        when (filterType) {
+            FilterType.ALL -> repository.getAllCandidates()
+            FilterType.FAVORITES -> repository.getFavoriteCandidates()
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     // État pour tous les candidats
     private val _allCandidates = MutableStateFlow<List<CandidateDto>>(emptyList())
     val allCandidates: StateFlow<List<CandidateDto>> = _allCandidates
@@ -29,6 +40,10 @@ class HomeScreenViewModel @Inject constructor(private val repository: CandidateR
                 _allCandidates.value = candidates
             }
         }
+    }
+
+    fun setFilter(filterType: FilterType) {
+        _filter.value = filterType
     }
 
     // Charger les favoris depuis le repository
