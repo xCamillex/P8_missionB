@@ -2,7 +2,9 @@ package com.openclassrooms.p8_vitesse.data.repository
 
 import com.openclassrooms.p8_vitesse.data.dao.CandidateDao
 import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
@@ -13,16 +15,20 @@ class CandidateRepositoryImpl @Inject constructor(
 ) : CandidateRepository {
 
     override fun getAllCandidates(): Flow<List<CandidateDto>> {
-        return candidateDao.getAllCandidates()
+        return candidateDao.getAllCandidates().map { candidates ->
+            candidates.map { it.toDto() }
+        }
     }
     override fun getFavoriteCandidates(): Flow<List<CandidateDto>> {
-        return candidateDao.getFavoriteCandidates()
+        return candidateDao.getFavoriteCandidates().map { candidates ->
+            candidates.map { it.toDto() }
+        }
     }
     override suspend fun insertCandidate(candidate: CandidateDto) {
-        candidateDao.insertCandidate(candidate)
+        candidateDao.insertCandidate(Candidate.fromDto(candidate))
     }
     override suspend fun deleteCandidate(candidate: CandidateDto) {
-        candidateDao.insertCandidate(candidate)
+        candidateDao.deleteCandidate(Candidate.fromDto(candidate))
     }
     override suspend fun deleteAllCandidates() {
         candidateDao.deleteAllCandidates()

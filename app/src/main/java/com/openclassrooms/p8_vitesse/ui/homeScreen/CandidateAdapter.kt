@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.ItemCandidateBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
 
@@ -35,7 +36,7 @@ class CandidateAdapter(
         fun bind(candidate: Candidate) {
             binding.candidateName.text = "${candidate.firstName} ${candidate.lastName}"
             binding.candidateNote.text = candidate.informationNote ?: ""
-            binding.candidatePhoto.setImageBitmap(candidate.photo)
+            binding.candidatePhoto.setImageResource(R.drawable.ic_person)
 
             // Clic sur l'élément
             binding.root.setOnClickListener {

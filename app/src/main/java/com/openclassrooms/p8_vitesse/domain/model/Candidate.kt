@@ -16,7 +16,7 @@ data class Candidate (
 ) {
     fun toDto(): CandidateDto {
     return CandidateDto(
-        id = this.id?:0,
+        id = this.id,
         firstName = this.firstName,
         lastName = this.lastName,
         photo = this.photo,
@@ -30,8 +30,8 @@ data class Candidate (
 }
 
     companion object {
-        fun fromDto(candiateDto: CandidateDto): Candidate {
-            return candiateDto.toModel()
+        fun fromDto(candidateDto: CandidateDto): Candidate {
+            return candidateDto.toModel()
         }
     }
 }

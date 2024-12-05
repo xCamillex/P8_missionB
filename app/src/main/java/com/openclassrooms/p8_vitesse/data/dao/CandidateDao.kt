@@ -19,11 +19,11 @@ interface CandidateDao {
 
     // Lire tous les candidats
     @Query("SELECT * FROM candidates ORDER BY last_name, first_name")
-    fun getAllCandidates(): Flow<List<CandidateDto>>
+    fun getAllCandidates(): Flow<List<Candidate>>
 
     // Lire les candidats favoris
-    @Query("SELECT * FROM candidates WHERE isFavorite = 1")
-    fun getFavoriteCandidates(): Flow<List<CandidateDto>>
+    @Query("SELECT * FROM candidates WHERE is_favorite = 1")
+    fun getFavoriteCandidates(): Flow<List<Candidate>>
 
     // Mettre à jour un candidat
     @Update
@@ -31,7 +31,7 @@ interface CandidateDao {
 
     // Supprimer un candidat
     @Delete
-    suspend fun deleteCandidate(candidate: CandidateDto)
+    suspend fun deleteCandidate(candidate: Candidate)
 
     // Supprimer tous les candidats
     @Query("DELETE FROM candidates")
