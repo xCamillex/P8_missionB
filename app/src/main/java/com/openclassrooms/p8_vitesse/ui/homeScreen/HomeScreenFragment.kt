@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.FragmentHomeScreenBinding
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import com.openclassrooms.p8_vitesse.utils.FilterType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -46,8 +48,11 @@ class HomeScreenFragment : Fragment() {
         // Ajouter les onglets au TabLayout
         setupTabLayout()
 
-// Observer les données du ViewModel
-        observeCandidates()
+        setupSearchBar()
+        setupFloatingActionButton()
+
+        // Observer les données du ViewModel
+        observeViewModel()
 
         // Charger les données initiales
         viewModel.loadCandidates()
@@ -58,8 +63,7 @@ class HomeScreenFragment : Fragment() {
      */
     private fun setupRecyclerView() {
         candidateAdapter = CandidateAdapter { candidate ->
-            // Action à effectuer lors du clic sur un candidat
-            // TODO: Naviguer vers le détail du candidat
+            onCandidateClicked(candidate)
         }
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -78,11 +82,9 @@ class HomeScreenFragment : Fragment() {
 
         // Écouter les changements d'onglets
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                when (tab.position) {
-                    0 -> viewModel.setFilter(FilterType.ALL)
-                    1 -> viewModel.setFilter(FilterType.FAVORITES)
-                }
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                val showFavorites = tab?.position == 1
+                viewModel.loadCandidates(favoritesOnly = showFavorites)
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -91,32 +93,81 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Observe les données des candidats et met à jour l'adapter.
+     * Configure la barre de recherche pour filtrer les candidats.
      */
-    private fun observeCandidates() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.isLoading.collect { isLoading ->
-                        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-                    }
-                }
-                launch {
-                    viewModel.isEmpty.collect { isEmpty ->
-                        binding.emptyStateText.visibility = if (isEmpty) View.VISIBLE else View.GONE
-                    }
-                }
-                launch {
-                    viewModel.filteredCandidates.collect { candidates ->
-                        binding.recyclerView.visibility =
-                            if (candidates.isEmpty()) View.GONE else View.VISIBLE
-                        candidateAdapter.submitList(candidates)
-                    }
+    private fun setupSearchBar() {
+        binding.searchEditText.setOnEditorActionListener { _, _, _ ->
+            val query = binding.searchEditText.text.toString()
+            viewModel.loadCandidates(filter = query)
+            true
+        }
+    }
+    /**
+     * Configure le Floating Action Button pour ajouter un candidat.
+     */
+    private fun setupFloatingActionButton() {
+        binding.fabAddCandidate.setOnClickListener {
+            // Naviguer vers l'écran d'ajout (AddScreen)
+            Toast.makeText(requireContext(), "Navigate to Add Screen", Toast.LENGTH_SHORT).show()
+        }
+    }
+    /**
+     * Observe les changements d'état dans le ViewModel.
+     */
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                when (state) {
+                    is HomeUiState.Loading -> showLoadingState()
+                    is HomeUiState.Success -> showCandidates(state.candidates)
+                    is HomeUiState.Empty -> showEmptyState()
+                    is HomeUiState.Error -> showError(state.message)
                 }
             }
         }
     }
 
+    /**
+     * Affiche l'état de chargement.
+     */
+    private fun showLoadingState() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.recyclerView.visibility = View.GONE
+        binding.emptyStateText.visibility = View.GONE
+    }
+    /**
+     * Affiche les candidats dans le RecyclerView.
+     */
+    private fun showCandidates(candidates: List<Candidate>) {
+        binding.progressBar.visibility = View.GONE
+        binding.recyclerView.visibility = View.VISIBLE
+        binding.emptyStateText.visibility = View.GONE
+        candidateAdapter.submitList(candidates)
+    }
+    /**
+     * Affiche l'état vide.
+     */
+    private fun showEmptyState() {
+        binding.progressBar.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        binding.emptyStateText.visibility = View.VISIBLE
+    }
+    /**
+     * Affiche un message d'erreur.
+     */
+    private fun showError(message: String) {
+        binding.progressBar.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+        binding.emptyStateText.visibility = View.GONE
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+    /**
+     * Action lors du clic sur un candidat.
+     */
+    private fun onCandidateClicked(candidate: Candidate) {
+        Toast.makeText(requireContext(), "Navigate to Detail Screen for ${candidate.firstName}", Toast.LENGTH_SHORT).show()
+        // Naviguer vers l'écran de détails
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
