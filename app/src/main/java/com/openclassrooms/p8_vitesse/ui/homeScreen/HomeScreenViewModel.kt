@@ -20,51 +20,63 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(private val repository: CandidateRepository) :
     ViewModel() {
 
-    /**
-     * État de chargement des données.
-     */
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> get() = _isLoading
-
-    /**
-     * État vide (aucun candidat à afficher).
-     */
-    private val _isEmpty = MutableStateFlow(false)
-    val isEmpty: StateFlow<Boolean> get() = _isEmpty
-
     // État du filtre (Tous ou Favoris)
     private val _filter = MutableStateFlow(FilterType.ALL)
     val filter: StateFlow<FilterType> = _filter
 
-    //Liste des candidats filtrés en fonction du filtre actuel.
+    /**
+     * Liste des candidats filtrés en fonction de l'état du filtre.
+     * - `FilterType.ALL` : Tous les candidats.
+     * - `FilterType.FAVORITES` : Candidats favoris uniquement.
+     */
     val filteredCandidates = _filter.flatMapLatest { filterType ->
         when (filterType) {
             FilterType.ALL -> repository.getAllCandidates()
             FilterType.FAVORITES -> repository.getFavoriteCandidates()
-        }.map { entities ->
-            _isLoading.value = false
-            _isEmpty.value = entities.isEmpty()
-            entities.toCandidateList() // Mapper les entités vers les modèles métier
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    //Charge les données des candidats depuis le repository.
+    /**
+     * Liste de tous les candidats récupérés depuis le repository.
+     */
+    private val _allCandidates = MutableStateFlow<List<CandidateDto>>(emptyList())
+    val allCandidates: StateFlow<List<CandidateDto>> = _allCandidates
+
+    /**
+     * Liste des candidats favoris récupérés depuis le repository.
+     */
+    private val _favoriteCandidates = MutableStateFlow<List<CandidateDto>>(emptyList())
+    val favoriteCandidates: StateFlow<List<CandidateDto>> = _favoriteCandidates
+
+    /**
+     * Charge tous les candidats depuis le repository.
+     * Les données sont collectées et stockées dans `_allCandidates`.
+     */
     fun loadCandidates() {
         viewModelScope.launch {
-            _isLoading.value = true
             repository.getAllCandidates().collect { candidates ->
-                _isLoading.value = false
-                _isEmpty.value = candidates.isEmpty()
+                _allCandidates.value = candidates
             }
         }
     }
 
     /**
      * Change le filtre appliqué pour la liste des candidats.
-     *
      * @param filterType Le type de filtre à appliquer (tous ou favoris).
      */
     fun setFilter(filterType: FilterType) {
         _filter.value = filterType
+    }
+
+    /**
+     * Charge les candidats favoris depuis le repository.
+     * Les données sont collectées et stockées dans `_favoriteCandidates`.
+     */
+    fun loadFavoritesCandidates() {
+        viewModelScope.launch {
+            repository.getFavoriteCandidates().collect { candidates ->
+                _favoriteCandidates.value = candidates
+            }
+        }
     }
 }
