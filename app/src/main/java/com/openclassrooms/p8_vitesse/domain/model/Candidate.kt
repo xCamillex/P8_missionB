@@ -4,15 +4,15 @@ import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 
 data class Candidate (
     var id : Long,
-    var photo : String,
-    var firstName : String,
-    var lastName : String,
-    var phoneNumber : String,
-    var emailAddress : String,
+    var firstName : String = "",
+    var lastName : String = "",
+    var photo : String = "",
+    var phoneNumber : String = "",
+    var emailAddress : String = "",
     var dateOfBirth : Long,
-    var expectedSalary : Int,
-    var informationNote : String,
-    var isFavorite : Boolean
+    var expectedSalary : Int = 0,
+    var informationNote : String = "",
+    var isFavorite : Boolean = false
 ) {
     fun toDto(): CandidateDto {
     return CandidateDto(

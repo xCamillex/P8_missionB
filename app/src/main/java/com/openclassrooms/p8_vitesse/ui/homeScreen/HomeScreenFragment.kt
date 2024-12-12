@@ -13,9 +13,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.openclassrooms.p8_vitesse.R
+import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 import com.openclassrooms.p8_vitesse.databinding.FragmentHomeScreenBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
-import com.openclassrooms.p8_vitesse.utils.FilterType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -76,9 +76,7 @@ class HomeScreenFragment : Fragment() {
      */
     private fun setupTabLayout() {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_all)))
-        binding.tabLayout.addTab(
-            binding.tabLayout.newTab().setText(getString(R.string.tab_favorites))
-        )
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_favorites)))
 
         // Écouter les changements d'onglets
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -116,12 +114,14 @@ class HomeScreenFragment : Fragment() {
      */
     private fun observeViewModel() {
         lifecycleScope.launch {
-            viewModel.uiState.collect { state ->
-                when (state) {
-                    is HomeUiState.Loading -> showLoadingState()
-                    is HomeUiState.Success -> showCandidates(state.candidates)
-                    is HomeUiState.Empty -> showEmptyState()
-                    is HomeUiState.Error -> showError(state.message)
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    when (state) {
+                        is HomeUiState.Loading -> showLoadingState()
+                        is HomeUiState.Success -> showCandidates(state.candidates)
+                        is HomeUiState.Empty -> showEmptyState()
+                        is HomeUiState.Error -> showError(state.message)
+                    }
                 }
             }
         }
@@ -139,10 +139,12 @@ class HomeScreenFragment : Fragment() {
      * Affiche les candidats dans le RecyclerView.
      */
     private fun showCandidates(candidates: List<Candidate>) {
-        binding.progressBar.visibility = View.GONE
-        binding.recyclerView.visibility = View.VISIBLE
-        binding.emptyStateText.visibility = View.GONE
-        candidateAdapter.submitList(candidates)
+        _binding?.let {
+            binding.progressBar.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+            binding.emptyStateText.visibility = View.GONE
+            candidateAdapter.submitList(candidates)
+        }
     }
     /**
      * Affiche l'état vide.

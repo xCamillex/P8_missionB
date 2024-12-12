@@ -16,14 +16,14 @@ data class CandidateDto(
     @ColumnInfo(name = "id")
     val id: Long = 0,
 
-    @ColumnInfo(name = "photo")
-    val photo: String,
-
     @ColumnInfo(name = "first_name")
     val firstName: String,
 
     @ColumnInfo(name = "last_name")
     val lastName: String,
+
+    @ColumnInfo(name = "photo")
+    val photo: String,
 
     @ColumnInfo(name = "phone_number")
     val phoneNumber: String,

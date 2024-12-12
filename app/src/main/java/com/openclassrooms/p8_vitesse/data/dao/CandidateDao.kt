@@ -15,15 +15,20 @@ interface CandidateDao {
 
     // Insérer un nouveau candidat
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCandidate(candidate: Candidate): Long
+    suspend fun insertCandidate(candidate: CandidateDto): Long
 
     // Lire tous les candidats
     @Query("SELECT * FROM candidates ORDER BY last_name, first_name")
-    fun getAllCandidates(): Flow<List<Candidate>>
+    fun getAllCandidates(): Flow<List<CandidateDto>>
 
     // Lire les candidats favoris
-    @Query("SELECT * FROM candidates WHERE is_favorite = 1")
-    fun getFavoriteCandidates(): Flow<List<Candidate>>
+    @Query("""
+        SELECT * 
+        FROM candidates 
+        WHERE (:favorite IS NULL OR is_favorite = :favorite) AND 
+        (:name IS NULL OR (first_name LIKE '%' || :name|| '%' OR last_name LIKE '%' || :name || '%'))
+        """)
+    fun getCandidates(favorite: Boolean?, name: String?): Flow<List<CandidateDto>>
 
     // Mettre à jour un candidat
     @Update
@@ -31,17 +36,16 @@ interface CandidateDao {
 
     // Supprimer un candidat
     @Delete
-    suspend fun deleteCandidate(candidate: Candidate)
+    suspend fun deleteCandidate(candidate: CandidateDto)
 
     // Supprimer tous les candidats
     @Query("DELETE FROM candidates")
     suspend fun deleteAllCandidates()
 
-    // Lire un candidat par son ID
     @Query("SELECT * FROM candidates WHERE id = :id ")
     fun getById(id: Long): Flow<CandidateDto>
 
-    // Mettre à jour le statut favori d'un candidat
     @Query("UPDATE candidates SET is_favorite = :favorite WHERE id = :id")
     suspend fun updateCandidate(id: Long, favorite: Boolean) : Int
+
 }

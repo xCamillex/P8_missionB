@@ -1,6 +1,6 @@
 package com.openclassrooms.p8_vitesse.ui.homeScreen
 
-import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
 
 /**
  * Représente les différents états de l'interface utilisateur pour l'écran d'accueil.
@@ -18,7 +18,7 @@ sealed class HomeUiState {
      * État chargé lorsque les candidats sont disponibles.
      * @param candidates Liste des candidats à afficher.
      */
-    data class Success(val candidates: List<CandidateDto>) : HomeUiState()
+    data class Success(val candidates: List<Candidate>) : HomeUiState()
     /**
      * État chargé lorsqu'une erreur survient.
      * @param message Le message d'erreur à afficher.

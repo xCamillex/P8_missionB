@@ -14,23 +14,69 @@ class CandidateRepositoryImpl @Inject constructor(
     private val candidateDao: CandidateDao
 ) : CandidateRepository {
 
-    override fun getAllCandidates(): Flow<List<CandidateDto>> {
-        return candidateDao.getAllCandidates().map { candidates ->
-            candidates.map { it.toDto() }
+    /**
+     * Récupérer tous les candidats depuis la base de données.
+     * Convertit les DTO en Domain Models.
+     */
+    override fun getAllCandidates(): Flow<List<Candidate>> {
+        return candidateDao.getAllCandidates().map { dtoList ->
+            dtoList.map { it.toModel() }
         }
     }
-    override fun getFavoriteCandidates(): Flow<List<CandidateDto>> {
-        return candidateDao.getFavoriteCandidates().map { candidates ->
-            candidates.map { it.toDto() }
+
+    /**
+     * Récupérer les candidats avec des filtres optionnels.
+     * Convertit les DTO en Domain Models.
+     */
+    override fun getCandidates(favorite: Boolean?, name: String?): Flow<List<Candidate>> {
+        return candidateDao.getCandidates(favorite, name).map { dtoList ->
+            dtoList.map { it.toModel() }
         }
     }
-    override suspend fun insertCandidate(candidate: CandidateDto) {
-        candidateDao.insertCandidate(Candidate.fromDto(candidate))
+
+    /**
+     * Récupérer un candidat par son ID.
+     * Convertit le DTO en Domain Model.
+     */
+    override fun getById(id: Long): Flow<Candidate> {
+        return candidateDao.getById(id).map { it.toModel() }
     }
-    override suspend fun deleteCandidate(candidate: CandidateDto) {
-        candidateDao.deleteCandidate(Candidate.fromDto(candidate))
+
+    /**
+     * Ajouter un candidat dans la base de données.
+     * Convertit le Domain Model en DTO.
+     */
+    override suspend fun insertCandidate(candidate: Candidate): Long {
+        return candidateDao.insertCandidate(candidate.toDto())
     }
+
+    /**
+     * Mettre à jour les informations d'un candidat.
+     * Convertit le Domain Model en DTO.
+     */
+    override suspend fun updateCandidate(candidate: Candidate): Int {
+        return candidateDao.updateCandidate(candidate.toDto())
+    }
+
+    /**
+     * Supprimer un candidat de la base de données.
+     * Convertit le Domain Model en DTO.
+     */
+    override suspend fun deleteCandidate(candidate: Candidate) {
+        candidateDao.deleteCandidate(candidate.toDto())
+    }
+
+    /**
+     * Supprimer tous les candidats de la base de données.
+     */
     override suspend fun deleteAllCandidates() {
         candidateDao.deleteAllCandidates()
+    }
+
+    /**
+     * Mettre à jour le statut de favori d'un candidat.
+     */
+    override suspend fun updateFavoriteStatus(id: Long, favorite: Boolean): Int {
+        return candidateDao.updateCandidate(id, favorite)
     }
 }

@@ -1,7 +1,7 @@
 package com.openclassrooms.p8_vitesse.domain.model.usecase
 
-import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 import com.openclassrooms.p8_vitesse.data.repository.CandidateRepository
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -13,7 +13,7 @@ class GetCandidateByIdUseCase @Inject constructor(
      * @param id L'identifiant unique du candidat.
      * @return Un flux contenant le candidat correspondant.
      */
-    fun execute(id: Long): Flow<CandidateDto> {
+    fun execute(id: Long): Flow<Candidate> {
         return candidateRepository.getById(id)
     }
 }

@@ -1,7 +1,7 @@
 package com.openclassrooms.p8_vitesse.domain.model.usecase
 
-import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 import com.openclassrooms.p8_vitesse.data.repository.CandidateRepository
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import javax.inject.Inject
 
 /**
@@ -16,7 +16,7 @@ class DeleteCandidateUseCase @Inject constructor(
      * Exécute la suppression d'un candidat donné.
      * @param candidate Le candidat à supprimer.
      */
-    suspend fun execute(candidate: CandidateDto) {
+    suspend fun execute(candidate: Candidate) {
         repository.deleteCandidate(candidate)
     }
 }

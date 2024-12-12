@@ -1,7 +1,7 @@
 package com.openclassrooms.p8_vitesse.domain.model.usecase
 
-import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 import com.openclassrooms.p8_vitesse.data.repository.CandidateRepository
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import javax.inject.Inject
 
 class UpdateCandidateUseCase @Inject constructor(
@@ -12,7 +12,7 @@ class UpdateCandidateUseCase @Inject constructor(
      * @param candidate Le candidat à mettre à jour.
      * @return Le nombre de lignes affectées.
      */
-    suspend fun invoke(candidate: CandidateDto): Int {
+    suspend fun invoke(candidate: Candidate): Int {
         return repository.updateCandidate(candidate)
     }
 }

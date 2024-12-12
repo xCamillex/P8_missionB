@@ -13,7 +13,7 @@ interface CandidateRepository {
      * Récupérer tous les candidats.
      * @return Un flux contenant la liste des candidats.
      */
-    fun getAllCandidates(): Flow<List<CandidateDto>>
+    fun getAllCandidates(): Flow<List<Candidate>>
 
     /**
      * Récupérer les candidats avec des filtres optionnels.
@@ -21,34 +21,34 @@ interface CandidateRepository {
      * @param name Filtrer par nom (partiel ou complet) ou null pour ignorer ce filtre.
      * @return Un flux contenant la liste des candidats correspondant aux critères.
      */
-    fun getCandidates(favorite: Boolean?, name: String?): Flow<List<CandidateDto>>
+    fun getCandidates(favorite: Boolean?, name: String?): Flow<List<Candidate>>
 
     /**
      * Récupérer un candidat par son ID.
      * @param id L'identifiant unique du candidat.
      * @return Un flux contenant le candidat correspondant.
      */
-    fun getById(id: Long): Flow<CandidateDto>
+    fun getById(id: Long): Flow<Candidate>
 
     /**
      * Ajouter ou mettre à jour un candidat.
      * @param candidate Le modèle de domaine du candidat à insérer.
      * @return L'identifiant du candidat inséré.
      */
-    suspend fun insertCandidate(candidate: CandidateDto): Long
+    suspend fun insertCandidate(candidate: Candidate): Long
 
     /**
      * Mettre à jour les informations d'un candidat.
      * @param candidate Le modèle de domaine du candidat à mettre à jour.
      * @return Le nombre de lignes affectées.
      */
-    suspend fun updateCandidate(candidate: CandidateDto): Int
+    suspend fun updateCandidate(candidate: Candidate): Int
 
     /**
      * Supprimer un candidat.
      * @param candidate Le modèle de domaine du candidat à supprimer.
      */
-    suspend fun deleteCandidate(candidate: CandidateDto)
+    suspend fun deleteCandidate(candidate: Candidate)
 
     /**
      * Supprimer tous les candidats.

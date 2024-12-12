@@ -2,8 +2,8 @@ package com.openclassrooms.p8_vitesse.ui.addOrEditScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 import com.openclassrooms.p8_vitesse.data.repository.CandidateRepository
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddOrEditScreenViewModel @Inject constructor(val repository: CandidateRepository): ViewModel() {
     // Ajouter ou mettre à jour un candidat
-    fun saveCandidate(candidate: CandidateDto) {
+    fun saveCandidate(candidate: Candidate) {
         viewModelScope.launch {
             repository.insertCandidate(candidate)
         }
