@@ -1,4 +1,4 @@
-package com.openclassrooms.p8_vitesse.domain.model.usecase
+package com.openclassrooms.p8_vitesse.domain.usecase
 
 import com.openclassrooms.p8_vitesse.data.repository.CandidateRepository
 import javax.inject.Inject
