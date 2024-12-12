@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.FragmentAddOrEditScreenBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,13 +30,15 @@ class AddOrEditScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO: Ajouter l'action du bouton "saveButton" après avoir créé le fichier XML
-        /*
-        binding.saveButton.setOnClickListener {
-            val candidate = // Récupérez les données du formulaire
-            viewModel.saveCandidate(candidate)
+        setupTopAppBar()
+    }
+
+    //Configure la TopAppBar avec un titre et une icône de navigation.
+    private fun setupTopAppBar() {
+        binding.topAppBar.title = getString(R.string.add_candidate)
+        binding.topAppBar.setNavigationOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-        */
     }
 
     override fun onDestroyView() {

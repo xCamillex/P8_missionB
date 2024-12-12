@@ -11,10 +11,5 @@ import javax.inject.Inject
 // ViewModel pour gérer les données et la logique de Add/EditScreen
 @HiltViewModel
 class AddOrEditScreenViewModel @Inject constructor(val repository: CandidateRepository): ViewModel() {
-    // Ajouter ou mettre à jour un candidat
-    fun saveCandidate(candidate: Candidate) {
-        viewModelScope.launch {
-            repository.insertCandidate(candidate)
-        }
-    }
+
 }

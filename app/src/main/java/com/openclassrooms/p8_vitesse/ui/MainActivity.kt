@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.ActivityMainBinding
+import com.openclassrooms.p8_vitesse.ui.addOrEditScreen.AddOrEditScreenFragment
 import com.openclassrooms.p8_vitesse.ui.homeScreen.HomeScreenFragment
 
 class MainActivity : AppCompatActivity() {
@@ -20,9 +21,27 @@ class MainActivity : AppCompatActivity() {
 
         // Charger HomeScreenFragment au démarrage de l'activité
         if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                replace(R.id.main, HomeScreenFragment())
-            }
+            navigateToHome()
+        }
+    }
+
+    /**
+     * Remplace le conteneur principal par HomeFragment.
+     */
+    private fun navigateToHome() {
+        supportFragmentManager.commit {
+            replace(R.id.fragment_container, HomeScreenFragment())
+            addToBackStack(null)
+        }
+    }
+
+    /**
+     * Remplace le conteneur principal par AddEditFragment.
+     */
+    fun navigateToAddEdit() {
+        supportFragmentManager.commit {
+            replace(R.id.fragment_container, AddOrEditScreenFragment())
+            addToBackStack(null)
         }
     }
 }

@@ -16,6 +16,7 @@ import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 import com.openclassrooms.p8_vitesse.databinding.FragmentHomeScreenBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
+import com.openclassrooms.p8_vitesse.ui.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -106,7 +107,8 @@ class HomeScreenFragment : Fragment() {
     private fun setupFloatingActionButton() {
         binding.fabAddCandidate.setOnClickListener {
             // Naviguer vers l'écran d'ajout (AddScreen)
-            Toast.makeText(requireContext(), "Navigate to Add Screen", Toast.LENGTH_SHORT).show()
+            (requireActivity() as
+                    MainActivity).navigateToAddEdit()
         }
     }
     /**
