@@ -3,7 +3,7 @@ package com.openclassrooms.p8_vitesse.domain.model
 import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 
 data class Candidate (
-    var id : Long,
+    var id : Long = 0,
     var firstName : String = "",
     var lastName : String = "",
     var photo : String = "",

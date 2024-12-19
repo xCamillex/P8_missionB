@@ -8,7 +8,9 @@ import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.ActivityMainBinding
 import com.openclassrooms.p8_vitesse.ui.addOrEditScreen.AddOrEditScreenFragment
 import com.openclassrooms.p8_vitesse.ui.homeScreen.HomeScreenFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {

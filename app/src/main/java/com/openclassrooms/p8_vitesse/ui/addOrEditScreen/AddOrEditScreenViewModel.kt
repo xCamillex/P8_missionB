@@ -2,10 +2,9 @@ package com.openclassrooms.p8_vitesse.ui.addOrEditScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.openclassrooms.p8_vitesse.data.repository.CandidateRepository
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
-import com.openclassrooms.p8_vitesse.domain.model.usecase.InsertCandidateUseCase
-import com.openclassrooms.p8_vitesse.domain.model.usecase.UpdateCandidateUseCase
+import com.openclassrooms.p8_vitesse.domain.usecase.InsertCandidateUseCase
+import com.openclassrooms.p8_vitesse.domain.usecase.UpdateCandidateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,8 +23,8 @@ import javax.inject.Inject
 class AddOrEditScreenViewModel @Inject constructor(
     private val insertCandidateUseCase: InsertCandidateUseCase,
     private val updateCandidateUseCase: UpdateCandidateUseCase,
-    private val repository: CandidateRepository
-) : ViewModel() {
+
+    ) : ViewModel() {
 
     // État actuel de l'opération (succès, erreur, chargement, etc.).
     private val _uiState = MutableStateFlow<AddOrEditUiState>(AddOrEditUiState.Idle)
@@ -34,7 +33,7 @@ class AddOrEditScreenViewModel @Inject constructor(
      * Insère un nouveau candidat dans la base de données.
      * @param candidate Le candidat à insérer.
      */
-    private fun insertCandidate(candidate: Candidate) {
+    fun insertCandidate(candidate: Candidate) {
         // Vérifier les champs obligatoires
         if (candidate.firstName.isBlank() || candidate.lastName.isBlank() ||
             candidate.phoneNumber.isBlank() || candidate.emailAddress.isBlank() ||
