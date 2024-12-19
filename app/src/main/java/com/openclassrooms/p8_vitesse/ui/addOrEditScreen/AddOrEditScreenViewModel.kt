@@ -1,5 +1,7 @@
 package com.openclassrooms.p8_vitesse.ui.addOrEditScreen
 
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
@@ -9,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.threeten.bp.Instant
 import javax.inject.Inject
 
 /**
@@ -29,6 +32,7 @@ class AddOrEditScreenViewModel @Inject constructor(
     // État actuel de l'opération (succès, erreur, chargement, etc.).
     private val _uiState = MutableStateFlow<AddOrEditUiState>(AddOrEditUiState.Idle)
     val uiState: StateFlow<AddOrEditUiState> = _uiState
+
     /**
      * Insère un nouveau candidat dans la base de données.
      * @param candidate Le candidat à insérer.

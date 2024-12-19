@@ -18,8 +18,11 @@ import com.openclassrooms.p8_vitesse.databinding.FragmentAddOrEditScreenBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @AndroidEntryPoint
 class AddOrEditScreenFragment : Fragment() {
@@ -56,6 +59,7 @@ class AddOrEditScreenFragment : Fragment() {
         observeUiState()
         setupSaveButton()
         setupPhotoClick()
+        setupDateOfBirthPicker()
     }
 
     //Configure la TopAppBar avec un titre et une icône de navigation.
@@ -107,23 +111,38 @@ class AddOrEditScreenFragment : Fragment() {
         }
     }
 
-    // Variable globale ou dans la classe pour stocker dateOfBirth en millisecondes
+    // Variable globale pour stocker la date de naissance en millisecondes
     private var dateOfBirth: Long? = null
+
+    // Fonction pour configurer le DatePicker
+    private fun setupDateOfBirthPicker() {
+        // Configuration du clic pour afficher le DatePicker
+        binding.tieAddEditDateOfBirth.setOnClickListener {
+            showDatePicker()
+        }
+    }
 
     // Fonction pour ouvrir le DatePickerDialog et sélectionner une date
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
-        dateOfBirth?.let { calendar.timeInMillis = it } // Pré-remplit avec la date sélectionnée si elle existe
+
+        // Si la date de naissance est déjà définie, on la pré-remplit dans le DatePicker
+        dateOfBirth?.let { calendar.timeInMillis = it }
 
         DatePickerDialog(
-            requireContext(), // Utilisez requireContext() pour éviter une valeur nulle
+            requireContext(),
             { _, year, month, dayOfMonth ->
+                // Met à jour la date dans dateOfBirth en millisecondes
                 calendar.set(year, month, dayOfMonth)
                 dateOfBirth = calendar.timeInMillis
+
+                // Affiche la date formatée dans un TextView ou un autre élément de l'UI
+                val dateString = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(dateOfBirth!!))
+                binding.tieAddEditDateOfBirth.setText(dateString)
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.get(Calendar.YEAR), // Année par défaut
+            calendar.get(Calendar.MONTH), // Mois par défaut
+            calendar.get(Calendar.DAY_OF_MONTH) // Jour par défaut
         ).show()
     }
 

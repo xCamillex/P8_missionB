@@ -64,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:hint="@string/first_name"
+                    app:errorEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/icon_firstname"
@@ -72,7 +73,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/ti_firstname"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
 
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -89,6 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:hint="@string/last_name"
+                    app:errorEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -97,7 +100,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/ti_lastname"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:inputType="text" />
 
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -124,6 +128,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:hint="@string/phone"
+                    app:errorEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/icon_phone"
@@ -160,6 +165,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:hint="@string/email"
+                    app:errorEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/icon_email"
@@ -203,8 +209,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@color/Purple">
+                        android:background="@color/Purple"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -239,15 +245,21 @@
                             android:layout_height="wrap_content" />
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/til_add_edit_date_of_birth"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            app:endIconMode="custom"
+                            app:errorEnabled="true">
 
                             <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/tie_add_edit_date_of_birth"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="16dp"
-                                android:layout_marginBottom="16dp"
-                                android:hint="@string/birthday_date" />
+                                android:cursorVisible="false"
+                                android:drawableEnd="@drawable/ic_outline_calendar"
+                                android:focusable="false"
+                                android:hint="Entrer une date"
+                                android:inputType="none" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
@@ -276,6 +288,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:hint="@string/expected_salary"
+                    app:errorEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/icon_salary"
@@ -312,6 +325,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="16dp"
                     android:hint="@string/note"
+                    app:errorEnabled="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/icon_notes"
@@ -321,14 +335,16 @@
                         android:id="@+id/ti_notes"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:ellipsize="none"
                         android:gravity="start|top"
-                        android:inputType="text" />
+                        android:inputType="textMultiLine"
+                        android:lines="5"
+                        android:scrollHorizontally="false" />
 
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
-
 
     </ScrollView>
 
