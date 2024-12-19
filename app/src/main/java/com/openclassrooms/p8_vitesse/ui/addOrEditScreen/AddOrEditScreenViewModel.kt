@@ -1,7 +1,5 @@
 package com.openclassrooms.p8_vitesse.ui.addOrEditScreen
 
-import android.graphics.Bitmap
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
@@ -11,7 +9,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.threeten.bp.Instant
 import javax.inject.Inject
 
 /**
@@ -60,6 +57,7 @@ class AddOrEditScreenViewModel @Inject constructor(
             }
         }
     }
+
     /**
      * Met à jour les informations d'un candidat existant dans la base de données.
      * @param candidate Les informations mises à jour du candidat.
@@ -69,21 +67,23 @@ class AddOrEditScreenViewModel @Inject constructor(
         if (candidate.firstName.isBlank() || candidate.lastName.isBlank() ||
             candidate.phoneNumber.isBlank() || candidate.emailAddress.isBlank() ||
             candidate.dateOfBirth == 0L
-        ){
+        ) {
             _uiState.value = AddOrEditUiState.Error("All fields are mandatory.")
             return
         }
-            viewModelScope.launch {
+        viewModelScope.launch {
             _uiState.value = AddOrEditUiState.Loading
             try {
                 val rowsAffected = updateCandidateUseCase.invoke(candidate)
                 if (rowsAffected > 0) {
-                    _uiState.value = AddOrEditUiState.Success("Candidate updated successfully", candidate.id)
+                    _uiState.value =
+                        AddOrEditUiState.Success("Candidate updated successfully", candidate.id)
                 } else {
                     _uiState.value = AddOrEditUiState.Error("Failed to update candidate.")
                 }
             } catch (e: Exception) {
-                _uiState.value = AddOrEditUiState.Error(e.message ?: "An unexpected error occurred.")
+                _uiState.value =
+                    AddOrEditUiState.Error(e.message ?: "An unexpected error occurred.")
             }
         }
     }

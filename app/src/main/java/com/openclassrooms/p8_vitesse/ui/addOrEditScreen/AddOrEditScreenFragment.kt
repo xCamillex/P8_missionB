@@ -73,9 +73,17 @@ class AddOrEditScreenFragment : Fragment() {
     /**
      * Configure l'action du clic sur la photo pour ouvrir la galerie.
      */
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                pickImageLauncher.launch("image/*")
+            } else {
+                Toast.makeText(requireContext(), "Permission refusée", Toast.LENGTH_SHORT).show()
+            }
+        }
     private fun setupPhotoClick() {
         binding.candidatePhoto.setOnClickListener {
-            pickImageLauncher.launch("image/*") // Lancer la sélection d'image
+            requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_IMAGES)
         }
     }
 
@@ -285,5 +293,21 @@ class AddOrEditScreenFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val ARG_CANDIDATE_ID = "candidate_id"
+
+        /**
+         * Crée une instance d'AddEditFragment pour éditer un candidat existant.
+         * @param candidateId L'ID du candidat à modifier.
+         */
+        fun newInstance(candidateId: Long): AddOrEditScreenFragment {
+            val fragment = AddOrEditScreenFragment()
+            val args = Bundle()
+            args.putLong(ARG_CANDIDATE_ID, candidateId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

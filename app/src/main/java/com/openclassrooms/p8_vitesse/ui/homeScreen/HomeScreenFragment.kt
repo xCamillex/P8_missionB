@@ -13,10 +13,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.openclassrooms.p8_vitesse.R
-import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 import com.openclassrooms.p8_vitesse.databinding.FragmentHomeScreenBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import com.openclassrooms.p8_vitesse.ui.MainActivity
+import com.openclassrooms.p8_vitesse.ui.detailScreen.DetailScreenFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -77,7 +77,9 @@ class HomeScreenFragment : Fragment() {
      */
     private fun setupTabLayout() {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_all)))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_favorites)))
+        binding.tabLayout.addTab(
+            binding.tabLayout.newTab().setText(getString(R.string.tab_favorites))
+        )
 
         // Écouter les changements d'onglets
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -101,6 +103,7 @@ class HomeScreenFragment : Fragment() {
             true
         }
     }
+
     /**
      * Configure le Floating Action Button pour ajouter un candidat.
      */
@@ -111,6 +114,7 @@ class HomeScreenFragment : Fragment() {
                     MainActivity).navigateToAddEdit()
         }
     }
+
     /**
      * Observe les changements d'état dans le ViewModel.
      */
@@ -137,6 +141,7 @@ class HomeScreenFragment : Fragment() {
         binding.recyclerView.visibility = View.GONE
         binding.emptyStateText.visibility = View.GONE
     }
+
     /**
      * Affiche les candidats dans le RecyclerView.
      */
@@ -148,6 +153,7 @@ class HomeScreenFragment : Fragment() {
             candidateAdapter.submitList(candidates)
         }
     }
+
     /**
      * Affiche l'état vide.
      */
@@ -156,6 +162,7 @@ class HomeScreenFragment : Fragment() {
         binding.recyclerView.visibility = View.GONE
         binding.emptyStateText.visibility = View.VISIBLE
     }
+
     /**
      * Affiche un message d'erreur.
      */
@@ -165,13 +172,18 @@ class HomeScreenFragment : Fragment() {
         binding.emptyStateText.visibility = View.GONE
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
+
     /**
      * Action lors du clic sur un candidat.
      */
     private fun onCandidateClicked(candidate: Candidate) {
-        Toast.makeText(requireContext(), "Navigate to Detail Screen for ${candidate.firstName}", Toast.LENGTH_SHORT).show()
-        // Naviguer vers l'écran de détails
+        val fragment = DetailScreenFragment.newInstance(candidate.id ?: 0)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

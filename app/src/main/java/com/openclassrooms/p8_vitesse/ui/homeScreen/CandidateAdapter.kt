@@ -1,13 +1,16 @@
 package com.openclassrooms.p8_vitesse.ui.homeScreen
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.ItemCandidateBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
+
 
 /**
  * Adapter pour afficher la liste des candidats dans un RecyclerView.
@@ -22,10 +25,12 @@ class CandidateAdapter(
      * ViewHolder pour un élément candidat.
      *
      * @param binding Liaison des vues avec le layout XML.
+     * @param onItemClick Fonction de clic pour un candidat.
      */
     class CandidateViewHolder(
         private val binding: ItemCandidateBinding,
-        private val onItemClick: (Candidate) -> Unit
+        private val onItemClick: (Candidate) -> Unit,
+        private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
 
         /**
@@ -36,7 +41,12 @@ class CandidateAdapter(
         fun bind(candidate: Candidate) {
             binding.candidateName.text = "${candidate.firstName} ${candidate.lastName}"
             binding.candidateNote.text = candidate.informationNote ?: ""
-            binding.candidatePhoto.setImageResource(R.drawable.ic_person)
+
+            Glide.with(context)
+                .load(candidate.photo)
+                .placeholder(R.drawable.default_avatar)
+                .error(R.drawable.ic_person)
+                .into(binding.candidatePhoto)
 
             // Clic sur l'élément
             binding.root.setOnClickListener {
@@ -51,7 +61,7 @@ class CandidateAdapter(
             parent,
             false
         )
-        return CandidateViewHolder(binding, onItemClick)
+        return CandidateViewHolder(binding, onItemClick, parent.context)
     }
 
     override fun onBindViewHolder(holder: CandidateViewHolder, position: Int) {

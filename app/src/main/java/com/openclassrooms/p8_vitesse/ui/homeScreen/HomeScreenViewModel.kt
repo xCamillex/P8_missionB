@@ -3,8 +3,8 @@ package com.openclassrooms.p8_vitesse.ui.homeScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
-import com.openclassrooms.p8_vitesse.domain.model.usecase.GetCandidatesUseCase
-import com.openclassrooms.p8_vitesse.domain.model.usecase.UpdateFavoriteStatusUseCase
+import com.openclassrooms.p8_vitesse.domain.usecase.GetCandidatesUseCase
+import com.openclassrooms.p8_vitesse.domain.usecase.UpdateFavoriteStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
