@@ -137,7 +137,7 @@ class AddOrEditScreenFragment : Fragment() {
         // Si la date de naissance est déjà définie, on la pré-remplit dans le DatePicker
         dateOfBirth?.let { calendar.timeInMillis = it }
 
-        DatePickerDialog(
+        val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
                 // Met à jour la date dans dateOfBirth en millisecondes
@@ -151,7 +151,9 @@ class AddOrEditScreenFragment : Fragment() {
             calendar.get(Calendar.YEAR), // Année par défaut
             calendar.get(Calendar.MONTH), // Mois par défaut
             calendar.get(Calendar.DAY_OF_MONTH) // Jour par défaut
-        ).show()
+        )
+            datePickerDialog.datePicker.maxDate = System.currentTimeMillis() // Date limite actuelle
+            datePickerDialog.show()
     }
 
     /**
