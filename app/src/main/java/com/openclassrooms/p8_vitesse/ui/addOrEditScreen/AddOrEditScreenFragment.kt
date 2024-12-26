@@ -256,15 +256,13 @@ class AddOrEditScreenFragment : Fragment() {
             binding.tilNotes.error = null
         }
         // Date de naissance
-        val dateOfBirth = Instant.now() // Remplacez par la vraie date de naissance saisie par l'utilisateur
-        if (dateOfBirth == Instant.EPOCH) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.missing_date_of_birth_error),
-                Toast.LENGTH_SHORT
-            ).show()
+        if (dateOfBirth == null) {
+            binding.tilAddEditDateOfBirth.error = getString(R.string.missing_fields_error)
             isValid = false
+        } else {
+            binding.tilAddEditDateOfBirth.error = null
         }
+
         return isValid
     }
 
