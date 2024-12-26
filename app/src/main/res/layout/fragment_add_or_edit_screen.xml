@@ -258,7 +258,7 @@
                                 android:cursorVisible="false"
                                 android:drawableEnd="@drawable/ic_outline_calendar"
                                 android:focusable="false"
-                                android:hint="Entrer une date"
+                                android:hint="@string/entrer_une_date"
                                 android:inputType="none" />
                         </com.google.android.material.textfield.TextInputLayout>
 

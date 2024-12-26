@@ -18,7 +18,7 @@
             android:background="@drawable/circle_background"/>
 
         <TextView
-            android:text="Appel"
+            android:text="@string/appel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"/>
@@ -43,7 +43,7 @@
             android:background="@drawable/circle_background"/>
 
         <TextView
-            android:text="SMS"
+            android:text="@string/sms"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"/>
@@ -67,7 +67,7 @@
             android:background="@drawable/circle_background"/>
 
         <TextView
-            android:text="E-mail"
+            android:text="@string/e_mail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"/>

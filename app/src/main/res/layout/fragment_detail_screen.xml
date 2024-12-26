@@ -118,7 +118,7 @@
                             android:id="@+id/tv_fragment_detail_a_propos"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="A propos"
+                            android:text="@string/a_propos"
                             android:textStyle="bold"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="24dp"/>
@@ -179,7 +179,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="24dp"
-                        android:text="Prétentions salariales"
+                        android:text="@string/pr_tentions_salariales"
                         android:textStyle="bold" />
 
                     <TextView
@@ -196,7 +196,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="42dp"
                         android:layout_marginBottom="32dp"
-                        android:text="soit £ 3026,99" />
+                        android:text="@string/soit" />
 
                 </LinearLayout>
 
@@ -225,7 +225,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:layout_marginStart="16dp"
-                        android:text="Notes"
+                        android:text="@string/notes"
                         android:textStyle="bold"
                         />
 
