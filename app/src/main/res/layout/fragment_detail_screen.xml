@@ -149,7 +149,7 @@
                             android:id="@+id/tv_fragment_detail_anniversaire"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Anniversaire"
+                            android:text="@string/anniversaire"
                             android:layout_marginStart="16dp"
                             android:layout_marginBottom="32dp"/>
 

@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.FragmentAddOrEditScreenBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
+import com.openclassrooms.p8_vitesse.ui.detailScreen.DetailScreenFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -55,7 +56,10 @@ class AddOrEditScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupTopAppBar()
+        val isEditMode = arguments?.getBoolean(ARG_IS_EDIT_MODE, false) ?: false
+        val candidateId = arguments?.getLong(ARG_CANDIDATE_ID, -1)
+
+        setupTopAppBar(isEditMode)
         observeUiState()
         setupSaveButton()
         setupPhotoClick()
@@ -63,8 +67,12 @@ class AddOrEditScreenFragment : Fragment() {
     }
 
     //Configure la TopAppBar avec un titre et une icône de navigation.
-    private fun setupTopAppBar() {
-        binding.topAppBar.title = getString(R.string.add_candidate)
+    private fun setupTopAppBar(isEditMode: Boolean) {
+        binding.topAppBar.title =if (isEditMode) {
+            getString(R.string.edit_candidate)
+        } else {
+            getString(R.string.add_candidate)
+        }
         binding.topAppBar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
@@ -94,7 +102,7 @@ class AddOrEditScreenFragment : Fragment() {
                 viewModel.uiState.collect { state ->
                     when (state) {
                         is AddOrEditUiState.Loading -> showLoading()
-                        is AddOrEditUiState.Success -> showSuccess(state.message)
+                        is AddOrEditUiState.Success -> showSuccess(state.message, state.candidateId)
                         is AddOrEditUiState.Error -> showError(state.error)
                         AddOrEditUiState.Idle -> Unit // Aucun changement
                     }
@@ -278,9 +286,13 @@ class AddOrEditScreenFragment : Fragment() {
      * Affiche un message de succès.
      * @param message Le message à afficher.
      */
-    private fun showSuccess(message: String) {
+    private fun showSuccess(message: String, candidateId: Long) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+        val detailFragment = DetailScreenFragment.newInstance(candidateId)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, detailFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     /**
@@ -297,15 +309,18 @@ class AddOrEditScreenFragment : Fragment() {
 
     companion object {
         private const val ARG_CANDIDATE_ID = "candidate_id"
+        private const val ARG_IS_EDIT_MODE = "is_edit_mode"
 
         /**
-         * Crée une instance d'AddEditFragment pour éditer un candidat existant.
-         * @param candidateId L'ID du candidat à modifier.
+         * Crée une instance d'AddEditFragment.
+         * @param candidateId L'ID du candidat à modifier (null si ajout).
+         * @param isEditMode Indique si on est en mode édition.
          */
-        fun newInstance(candidateId: Long): AddOrEditScreenFragment {
+        fun newInstance(candidateId: Long? = null, isEditMode: Boolean): AddOrEditScreenFragment {
             val fragment = AddOrEditScreenFragment()
             val args = Bundle()
-            args.putLong(ARG_CANDIDATE_ID, candidateId)
+            candidateId?.let { args.putLong(ARG_CANDIDATE_ID, it) }
+            args.putBoolean(ARG_IS_EDIT_MODE, isEditMode)
             fragment.arguments = args
             return fragment
         }

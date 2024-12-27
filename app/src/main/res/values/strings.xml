@@ -50,6 +50,7 @@
     <string name="detail_screen_top_bar_name_text" translatable="false">Detail screen</string>
     <string name="navigation_back">retour</string>
     <string name="candidate_added_successfully">Candidat ajouté avec succès</string>
+    <string name="anniversaire">Anniversaire</string>
 
 
 </resources>

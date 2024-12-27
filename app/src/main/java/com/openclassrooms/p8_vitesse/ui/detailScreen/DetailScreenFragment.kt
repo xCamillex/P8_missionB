@@ -83,7 +83,7 @@ class DetailScreenFragment : Fragment() {
             if (candidate != null && candidate.id != null) {
                 val candidateId = candidate.id
                 // Naviguer vers AddEditFragment avec candidateId
-                val editFragment = AddOrEditScreenFragment.newInstance(candidateId)
+                val editFragment = AddOrEditScreenFragment.newInstance(candidateId, true)
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, editFragment)
                     .addToBackStack(null)
