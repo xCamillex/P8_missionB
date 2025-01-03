@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.ActivityMainBinding
-import com.openclassrooms.p8_vitesse.ui.addOrEditScreen.AddOrEditScreenFragment
 import com.openclassrooms.p8_vitesse.ui.homeScreen.HomeScreenFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,16 +32,6 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToHome() {
         supportFragmentManager.commit {
             replace(R.id.fragment_container, HomeScreenFragment())
-            addToBackStack(null)
-        }
-    }
-
-    /**
-     * Remplace le conteneur principal par AddEditFragment.
-     */
-    fun navigateToAddEdit() {
-        supportFragmentManager.commit {
-            replace(R.id.fragment_container, AddOrEditScreenFragment())
             addToBackStack(null)
         }
     }

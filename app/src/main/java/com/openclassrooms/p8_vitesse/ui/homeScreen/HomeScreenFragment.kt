@@ -2,6 +2,8 @@ package com.openclassrooms.p8_vitesse.ui.homeScreen
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +17,7 @@ import com.google.android.material.tabs.TabLayout
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.FragmentHomeScreenBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
-import com.openclassrooms.p8_vitesse.ui.MainActivity
+import com.openclassrooms.p8_vitesse.ui.addOrEditScreen.AddOrEditScreenFragment
 import com.openclassrooms.p8_vitesse.ui.detailScreen.DetailScreenFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -42,21 +44,50 @@ class HomeScreenFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Initialisation du RecyclerView
         setupRecyclerView()
-
-        // Ajouter les onglets au TabLayout
         setupTabLayout()
-
         setupSearchBar()
-        setupFloatingActionButton()
-
-        // Observer les données du ViewModel
         observeViewModel()
 
-        // Charger les données initiales
+        // Charger les candidats initiaux
         viewModel.loadCandidates()
+
+        // Configuration du FAB pour naviguer vers AddEditFragment
+        binding.fabAddCandidate.setOnClickListener {
+            navigateToAddEditFragment()
+        }
+    }
+
+    /**
+     * Navigue vers le fragment AddEditFragment pour ajouter un candidat.
+     */
+    private fun navigateToAddEditFragment() {
+        parentFragmentManager.beginTransaction()
+            .replace(
+                R.id.fragment_container, // ID du conteneur défini dans l'activité principale
+                AddOrEditScreenFragment()
+            )
+            .addToBackStack(null) // Permet de revenir en arrière avec le bouton retour
+            .commit()
+    }
+
+    /**
+     * Configure la barre de recherche.
+     */
+    private fun setupSearchBar() {
+        binding.searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Filtrer les candidats en fonction du texte saisi
+                viewModel.loadCandidates(
+                    filter = s?.toString(),
+                    favoritesOnly = binding.tabLayout.selectedTabPosition == 1
+                )
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
     }
 
     /**
@@ -76,43 +107,23 @@ class HomeScreenFragment : Fragment() {
      * Configure le TabLayout pour gérer les filtres "Tous" et "Favoris".
      */
     private fun setupTabLayout() {
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_all)))
-        binding.tabLayout.addTab(
-            binding.tabLayout.newTab().setText(getString(R.string.tab_favorites))
-        )
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.tab_all)) // 🇫🇷 Tous
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.tab_favorites))
 
-        // Écouter les changements d'onglets
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                val showFavorites = tab?.position == 1
-                viewModel.loadCandidates(favoritesOnly = showFavorites)
+                when (tab?.position) {
+                    0 -> viewModel.loadCandidates(filter = binding.searchEditText.text.toString())
+                    1 -> viewModel.loadCandidates(
+                        filter = binding.searchEditText.text.toString(),
+                        favoritesOnly = true
+                    )
+                }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
-    }
-
-    /**
-     * Configure la barre de recherche pour filtrer les candidats.
-     */
-    private fun setupSearchBar() {
-        binding.searchEditText.setOnEditorActionListener { _, _, _ ->
-            val query = binding.searchEditText.text.toString()
-            viewModel.loadCandidates(filter = query)
-            true
-        }
-    }
-
-    /**
-     * Configure le Floating Action Button pour ajouter un candidat.
-     */
-    private fun setupFloatingActionButton() {
-        binding.fabAddCandidate.setOnClickListener {
-            // Naviguer vers l'écran d'ajout (AddScreen)
-            (requireActivity() as
-                    MainActivity).navigateToAddEdit()
-        }
     }
 
     /**
@@ -155,7 +166,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Affiche l'état vide.
+     * Affiche un message d'état vide si aucun candidat n'est disponible.
      */
     private fun showEmptyState() {
         binding.progressBar.visibility = View.GONE
@@ -175,9 +186,14 @@ class HomeScreenFragment : Fragment() {
 
     /**
      * Action lors du clic sur un candidat.
+     * @param candidate Le candidat sélectionné.
      */
     private fun onCandidateClicked(candidate: Candidate) {
-        val fragment = DetailScreenFragment.newInstance(candidate.id ?: 0)
+        val fragment = DetailScreenFragment().apply {
+            arguments = Bundle().apply {
+                putLong("candidate_id", candidate.id ?: -1L)
+            }
+        }
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
