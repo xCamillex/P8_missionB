@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -11,17 +10,18 @@
         android:orientation="vertical">
 
         <ImageButton
+            android:id="@+id/contactPhoneButton"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_outline_phone"
             android:layout_weight="1"
-            android:background="@drawable/circle_background"/>
+            android:background="@drawable/circle_background"
+            android:src="@drawable/ic_outline_phone" />
 
         <TextView
-            android:text="@string/appel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:text="@string/appel" />
 
     </LinearLayout>
 
@@ -36,17 +36,18 @@
         android:orientation="vertical">
 
         <ImageButton
+            android:id="@+id/contactSmsButton"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_message"
             android:layout_weight="1"
-            android:background="@drawable/circle_background"/>
+            android:background="@drawable/circle_background"
+            android:src="@drawable/ic_message" />
 
         <TextView
-            android:text="@string/sms"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:text="@string/sms" />
 
     </LinearLayout>
 
@@ -60,23 +61,20 @@
         android:orientation="vertical">
 
         <ImageButton
+            android:id="@+id/contactEmailButton"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_outline_email"
             android:layout_weight="1"
-            android:background="@drawable/circle_background"/>
+            android:background="@drawable/circle_background"
+            android:src="@drawable/ic_outline_email" />
 
         <TextView
-            android:text="@string/e_mail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+            android:layout_gravity="center_horizontal"
+            android:text="@string/e_mail" />
 
     </LinearLayout>
-
-
-
-
 
 
 </LinearLayout>

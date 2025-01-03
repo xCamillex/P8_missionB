@@ -1,5 +1,6 @@
 package com.openclassrooms.p8_vitesse.ui.detailScreen
 
+import android.content.Intent
 import android.net.Uri
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -8,10 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
-import com.google.android.material.appbar.MaterialToolbar
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.FragmentDetailScreenBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
@@ -19,12 +19,6 @@ import com.openclassrooms.p8_vitesse.ui.addOrEditScreen.AddOrEditScreenFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDate
-import org.threeten.bp.ZoneId
-import org.threeten.bp.temporal.ChronoUnit
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @AndroidEntryPoint
 class DetailScreenFragment : Fragment() {
@@ -33,6 +27,9 @@ class DetailScreenFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: DetailScreenViewModel by viewModels()
+
+    // ID du candidat affiché
+    private var candidateId: Long = -1L
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,202 +41,214 @@ class DetailScreenFragment : Fragment() {
     }
 
     /**
-     * Appelée après la création de la vue.
-     * On récupère l'ID du candidat, on charge les données, on met en place la toolbar et on observe le ViewModel.
+     * Méthode appelée lorsque la vue est prête.
+     * On initialise la toolbar, on charge le candidat, et on observe le ViewModel.
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Récupérer l'ID du candidat depuis les arguments
-        val candidateId = arguments?.getLong(ARG_CANDIDATE_ID)
-            ?: throw IllegalArgumentException("Candidate ID is required for DetailFragment")
+        candidateId = arguments?.getLong("candidate_id", -1L) ?: -1L
+        if (candidateId > 0) {
+            viewModel.loadCandidate(candidateId)
+        } else {
+            Toast.makeText(requireContext(), "Candidat introuvable", Toast.LENGTH_SHORT).show()
+            parentFragmentManager.popBackStack()
+        }
 
-        // Charger les détails du candidat
-        viewModel.loadCandidate(candidateId)
-
-        setupTopAppBar()
+        setupToolbar()
         observeViewModel()
     }
 
     /**
-     * Configure la TopAppBar avec les icônes et les actions nécessaires.
+     * Configure la barre d'application (toolbar).
+     * - Icône retour
+     * - Icône delete (suppression)
+     * - Icône edit (édition)
+     * - Icône favori (étoile)
      */
-    private fun setupTopAppBar() {
-        val toolbar: MaterialToolbar = binding.topAppBar
-        // Action pour la flèche de navigation
-        toolbar.setNavigationOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+    private fun setupToolbar() {
+        binding.topAppBar.setNavigationIcon(R.drawable.ic_back_arrow)
+        binding.topAppBar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
         }
 
-        // Marquer/Dé-marquer comme favori
-        binding.favoriteIcon.setOnClickListener {
+        val deleteIcon = binding.topAppBar.findViewById<View>(R.id.delete_icon)
+        val editIcon = binding.topAppBar.findViewById<View>(R.id.edit_icon)
+        val favoriteIcon = binding.topAppBar.findViewById<View>(R.id.favorite_icon)
+
+        // Suppression
+        deleteIcon.setOnClickListener {
+            showDeleteConfirmationDialog()
+        }
+        deleteIcon.setOnLongClickListener {
+            Toast.makeText(requireContext(), getString(R.string.delete_confirmation), Toast.LENGTH_SHORT).show()
+            true
+        }
+
+        // Édition
+        editIcon.setOnClickListener {
+            val fragment = AddOrEditScreenFragment().apply {
+                arguments = Bundle().apply {
+                    putLong("candidate_id", candidateId)
+                }
+            }
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        editIcon.setOnLongClickListener {
+            Toast.makeText(requireContext(), getString(R.string.edit_icon), Toast.LENGTH_SHORT).show()
+            true
+        }
+
+        // Favori
+        favoriteIcon.setOnClickListener {
             viewModel.toggleFavoriteStatus()
         }
-
-        // Action pour le bouton Modifier
-        binding.editIcon.setOnClickListener {
-            // Naviguer vers AddEditFragment en mode édition
-            val candidate = viewModel.candidate.value
-            if (candidate != null && candidate.id != null) {
-                val candidateId = candidate.id
-                // Naviguer vers AddEditFragment avec candidateId
-                val editFragment = AddOrEditScreenFragment.newInstance(candidateId, true)
-                requireActivity().supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, editFragment)
-                    .addToBackStack(null)
-                    .commit()
-            } else {
-                Toast.makeText(requireContext(), "Candidate not loaded yet", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-
-        // Supprimer le candidat (afficher un dialogue de confirmation)
-        binding.deleteIcon.setOnClickListener {
-            showDeleteConfirmationDialog()
+        favoriteIcon.setOnLongClickListener {
+            Toast.makeText(requireContext(), getString(R.string.favorite_icon), Toast.LENGTH_SHORT).show()
+            true
         }
     }
 
     /**
-     * Affiche une boîte de dialogue demandant à l'utilisateur de confirmer la suppression du candidat.
-     *
+     * Observe les états du ViewModel pour mettre à jour l'UI.
      */
-
-    private fun showDeleteConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.delete_confirmation_title)
-            .setMessage(R.string.delete_confirmation_message)
-            .setPositiveButton(R.string.delete_confirmation) { dialog, _ ->
-                dialog.dismiss()
-                // L'utilisateur confirme la suppression : on appelle le ViewModel
-                viewModel.deleteCandidate()
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                viewModel.uiState.collectLatest { state ->
+                    when (state) {
+                        is DetailUiState.Loading -> {
+                            showLoading(true)
+                        }
+                        is DetailUiState.Success -> {
+                            showLoading(false)
+                            // On a maintenant un convertedSalary dans l'état
+                            updateUIWithCandidate(state.candidate, state.convertedSalary)
+                        }
+                        is DetailUiState.Error -> {
+                            showLoading(false)
+                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
-            .setNegativeButton(R.string.delete_cancel) { dialog, _ ->
+        }
+    }
+
+    /**
+     * Met à jour l'UI avec les informations du candidat et le salaire converti.
+     *
+     * @param candidate Le candidat chargé.
+     * @param convertedSalary Le salaire converti au format "soit £ xxx.xx"
+     */
+    private fun updateUIWithCandidate(candidate: Candidate, convertedSalary: String) {
+        // Nom du candidat dans la toolbar
+        binding.topAppBar.title = "${candidate.firstName} ${candidate.lastName}"
+
+        // Icône favori
+        val favoriteIcon = binding.topAppBar.findViewById<android.widget.ImageView>(R.id.favorite_icon)
+        if (candidate.isFavorite) {
+            favoriteIcon.setImageResource(R.drawable.ic_star_filled)
+        } else {
+            favoriteIcon.setImageResource(R.drawable.ic_star_empty)
+        }
+
+        // Photo du candidat
+        val defaultPhotoResId = R.drawable.default_avatar
+        if (candidate.photo.isNotBlank()) {
+            // Utilisation de Glide pour charger la photo
+            Glide.with(binding.profilePhoto.context)
+                .load(candidate.photo) // URL ou chemin de la photo
+                .placeholder(defaultPhotoResId) // Image de remplacement pendant le chargement
+                .error(defaultPhotoResId) // Image en cas d'erreur de chargement
+                .into(binding.profilePhoto)
+        } else {
+            // Affiche l'image par défaut si aucune photo n'est fournie
+            binding.profilePhoto.setImageResource(defaultPhotoResId)
+        }
+
+        // A propos : date de naissance et âge
+        val formattedDate = viewModel.formatDateOfBirth(candidate.dateOfBirth)
+        val age = viewModel.calculateAge(candidate.dateOfBirth)
+        binding.tvFragmentDetailDateOfbirth.text = formattedDate
+        binding.tvFragmentDetailAge.text = "$age ans"
+
+        // Salaire
+        binding.tvExpectedSalary.text = "${candidate.expectedSalary} €"
+        // On a maintenant un TextView pour la conversion en livres, `tvConvertedSalary`
+        binding.tvConvertedSalary.text = convertedSalary
+
+        // Notes
+        binding.tvDetailNotesToDisplay.text = candidate.informationNote ?: ""
+
+        // Boutons Appel, SMS, Email
+        setupContactButtons(candidate)
+    }
+
+    /**
+     * Configure les boutons de contact (Appel, SMS, Email).
+     */
+    private fun setupContactButtons(candidate: Candidate) {
+        val contactBinding = binding.contact
+
+        // Appel
+        contactBinding.contactPhoneButton.setOnClickListener {
+            val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:${candidate.phoneNumber}"))
+            startActivity(dialIntent)
+        }
+
+        // SMS
+        contactBinding.contactSmsButton.setOnClickListener {
+            val smsIntent = Intent(Intent.ACTION_VIEW, Uri.parse("sms:${candidate.phoneNumber}"))
+            startActivity(smsIntent)
+        }
+
+        // Email
+        contactBinding.contactEmailButton.setOnClickListener {
+            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", candidate.emailAddress, null))
+            startActivity(Intent.createChooser(emailIntent, "Envoyer un email..."))
+        }
+    }
+
+    /**
+     * Affiche ou cache le chargement.
+     *
+     * @param isLoading true pour afficher le ProgressBar, false pour afficher le contenu.
+     */
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.scrollView.visibility = View.GONE
+        } else {
+            binding.progressBar.visibility = View.GONE
+            binding.scrollView.visibility = View.VISIBLE
+        }
+    }
+
+     /**
+     * Affiche une boîte de dialogue pour confirmer la suppression du candidat.
+     */
+    private fun showDeleteConfirmationDialog() {
+        android.app.AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.delete_confirmation_title))
+            .setMessage(getString(R.string.delete_confirmation_message))
+            .setPositiveButton(getString(R.string.delete_confirmation)) { dialog, _ ->
+                viewModel.deleteCurrentCandidate()
+                dialog.dismiss()
+                // Retour à l'accueil
+                parentFragmentManager.popBackStack()
+            }
+            .setNegativeButton(getString(R.string.delete_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
     }
 
-    /**
-     * Observe le ViewModel pour :
-     * - Afficher le candidat quand il est disponible.
-     * - Réagir aux demandes de navigation (édition, retour après suppression).
-     */
-    private fun observeViewModel() {
-        lifecycleScope.launch {
-            viewModel.candidate.collectLatest { candidate ->
-                candidate?.let {
-                    updateUI(it)
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            viewModel.navigateToEdit.collectLatest { navigate ->
-                if (navigate) {
-                    Toast.makeText(requireContext(), "Navigate to Edit Screen", Toast.LENGTH_SHORT)
-                        .show()
-                    // Implémenter la navigation vers EditFragment ici
-                    viewModel.resetNavigationFlags()
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            viewModel.navigateBackAfterDelete.collectLatest { navigate ->
-                if (navigate) {
-                    // On revient en arrière après la suppression
-                    requireActivity().onBackPressedDispatcher.onBackPressed()
-                    viewModel.resetNavigationFlags()
-                }
-            }
-        }
-    }
-
-    /**
-     * Met à jour l'interface utilisateur avec les données du candidat.
-     * @param candidate Le candidat actuellement sélectionné.
-     */
-    private fun updateUI(candidate: Candidate) {
-        // Mettre à jour le titre avec le nom complet
-        binding.topAppBar.title = "${candidate.firstName} ${candidate.lastName.uppercase()}"
-
-        // Mettre à jour l'icône Favori
-        binding.favoriteIcon.setImageResource(
-            if (candidate.isFavorite) R.drawable.ic_star_filled else R.drawable.ic_star_empty
-        )
-
-        // Mettre à jour la photo du candidat
-        val photoToDisplay = candidate.photo
-            ?: Uri.parse("android.resource://${requireContext().packageName}/drawable/default_avatar")
-        Glide.with(requireContext())
-            .load(photoToDisplay)
-            .into(binding.profilePhoto)
-
-        // Formate et affiche la date de naissance
-        val formattedDate = formatDateOfBirth(candidate.dateOfBirth)
-        binding.tvFragmentDetailDateOfbirth.text = formattedDate
-
-        // Calcule et affiche l'âge
-        // Modifier calculateAge pour accepter un Long représentant les millisecondes
-        fun calculateAge(dateOfBirthMillis: Long): Long {
-            val birthDate =
-                Instant.ofEpochMilli(dateOfBirthMillis).atZone(ZoneId.systemDefault()).toLocalDate()
-            val currentDate = LocalDate.now()
-            return ChronoUnit.YEARS.between(birthDate, currentDate)
-        }
-
-        val age = calculateAge(candidate.dateOfBirth)
-        binding.tvFragmentDetailAge.text = getString(R.string.age_format, age)
-
-        val salaryText = "${candidate.expectedSalary} €"
-        binding.tvExpectedSalary.text = salaryText
-
-        val notesToDisplay = candidate.informationNote ?: ""
-        binding.tvDetailNotesToDisplay.text = notesToDisplay
-    }
-
-    /**
-     * Formate une date de naissance en chaîne lisible.
-     * @param dateOfBirth La date de naissance en Instant.
-     * @return La date formatée en String.
-     */
-    private fun formatDateOfBirth(dateOfBirthMillis: Long): String {
-        val dateFormat =
-            SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())  // Format de date que vous voulez
-        return dateFormat.format(dateOfBirthMillis) ?: ""
-    }
-
-    /**
-     * Calcule l'âge à partir de la date de naissance.
-     * @param dateOfBirth La date de naissance du candidat en Instant.
-     * @return L'âge en années.
-     */
-    private fun calculateAge(dateOfBirth: Instant): Long {
-        val birthDate = dateOfBirth.atZone(ZoneId.systemDefault()).toLocalDate()
-        val currentDate = LocalDate.now()
-        return ChronoUnit.YEARS.between(birthDate, currentDate)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val ARG_CANDIDATE_ID = "candidate_id"
-
-        /**
-         * Crée une instance de DetailFragment avec l'ID du candidat.
-         * @param candidateId L'ID du candidat à afficher.
-         * @return Une nouvelle instance configurée de DetailFragment.
-         */
-        fun newInstance(candidateId: Long): DetailScreenFragment {
-            return DetailScreenFragment().apply {
-                arguments = Bundle().apply {
-                    putLong(ARG_CANDIDATE_ID, candidateId)
-                }
-            }
-        }
     }
 }
