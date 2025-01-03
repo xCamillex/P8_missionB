@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.openclassrooms.p8_vitesse"
-        minSdk = 33
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -45,11 +45,13 @@ android {
 
 dependencies {
 
-    implementation("androidx.compose.foundation:foundation-layout-android:1.7.5")
+    implementation("androidx.compose.foundation:foundation-layout-android:1.7.6")
     implementation("com.google.firebase:firebase-inappmessaging-display:21.0.1")
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation("androidx.media3:media3-common-ktx:1.5.1")
+
     // Room
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
@@ -65,6 +67,8 @@ dependencies {
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.google.code.gson:gson:2.11.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
@@ -90,6 +94,11 @@ dependencies {
     //Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+    // Moshi JSON Library
+    implementation("com.squareup.moshi:moshi:1.15.2")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.2")
 
 
 }
