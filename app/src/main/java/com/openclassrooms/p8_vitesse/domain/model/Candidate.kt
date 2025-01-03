@@ -9,7 +9,7 @@ data class Candidate (
     var photo : String = "",
     var phoneNumber : String = "",
     var emailAddress : String = "",
-    var dateOfBirth : Long,
+    var dateOfBirth : Long = 0L,
     var expectedSalary : Int = 0,
     var informationNote : String = "",
     var isFavorite : Boolean = false

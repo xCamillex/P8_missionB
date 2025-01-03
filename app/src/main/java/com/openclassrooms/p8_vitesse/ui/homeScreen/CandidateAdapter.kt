@@ -3,6 +3,7 @@ package com.openclassrooms.p8_vitesse.ui.homeScreen
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +31,6 @@ class CandidateAdapter(
     class CandidateViewHolder(
         private val binding: ItemCandidateBinding,
         private val onItemClick: (Candidate) -> Unit,
-        private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
 
         /**
@@ -42,9 +42,11 @@ class CandidateAdapter(
             binding.candidateName.text = "${candidate.firstName} ${candidate.lastName}"
             binding.candidateNote.text = candidate.informationNote ?: ""
 
-            Glide.with(context)
+            val placeholderDrawable = ContextCompat.getDrawable(binding.root.context, R.drawable.default_avatar)
+
+            Glide.with(binding.root.context)
                 .load(candidate.photo)
-                .placeholder(R.drawable.default_avatar)
+                .placeholder(placeholderDrawable)
                 .error(R.drawable.ic_person)
                 .into(binding.candidatePhoto)
 
@@ -61,7 +63,7 @@ class CandidateAdapter(
             parent,
             false
         )
-        return CandidateViewHolder(binding, onItemClick, parent.context)
+        return CandidateViewHolder(binding, onItemClick)
     }
 
     override fun onBindViewHolder(holder: CandidateViewHolder, position: Int) {
