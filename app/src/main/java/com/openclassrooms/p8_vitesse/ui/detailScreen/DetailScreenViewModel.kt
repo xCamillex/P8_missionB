@@ -8,6 +8,7 @@ import com.openclassrooms.p8_vitesse.domain.usecase.DeleteCandidateUseCase
 import com.openclassrooms.p8_vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.openclassrooms.p8_vitesse.domain.usecase.GetConversionRateUseCase
 import com.openclassrooms.p8_vitesse.domain.usecase.UpdateFavoriteStatusUseCase
+import com.openclassrooms.p8_vitesse.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneId
 import org.threeten.bp.temporal.ChronoUnit
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -146,13 +148,10 @@ class DetailScreenViewModel @Inject constructor(
      * @return Une chaîne de caractères formattée.
      */
     fun formatDateOfBirth(dateOfBirth: Instant): String {
-        val zdt = dateOfBirth.atZone(ZoneId.systemDefault())
-        val day = zdt.dayOfMonth.toString().padStart(2, '0')
-        val month = zdt.monthValue.toString().padStart(2, '0')
-        val year = zdt.year.toString()
-        // Pour l'instant on respecte le format français "dd/MM/yyyy"
-        return "$day/$month/$year"
+        val currentLocale = Locale.getDefault()
+        return DateUtils.localeDateTimeStringFromInstant(dateOfBirth, currentLocale) ?: "Date invalide"
     }
+
 
     /**
      * Conversion du salaire en livres.

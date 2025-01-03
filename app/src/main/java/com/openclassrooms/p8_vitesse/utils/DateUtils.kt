@@ -2,28 +2,22 @@ package com.openclassrooms.p8_vitesse.utils
 
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
+import java.util.Locale
 
 object DateUtils {
-    val sDateFormatter =
-        DateTimeFormatter.ofPattern("dd/MM/yy")
-
-    val sLocaleZone = ZoneId.of("Europe/Paris")
-
-    fun computeInstantFromLocalDate(year: Int, month: Int, day: Int): Instant {
-        return ZonedDateTime
-            .now(sLocaleZone)
-            .withYear(year)
-            // instant API start at month 1, not 0
-            .withMonth(month + 1)
-            .withDayOfMonth(day)
-            .toInstant()
-    }
-
-    fun localeDateTimeStringFromInstant(instant: Instant?): String? {
+    fun localeDateTimeStringFromInstant(instant: Instant?, locale: Locale = Locale.getDefault()): String? {
         if (instant == null) return null
-        val zdt = instant.atZone(sLocaleZone)
-        return zdt.format(sDateFormatter)
+        val zdt = instant.atZone(ZoneId.systemDefault())
+
+        // Définir le format en fonction de la langue
+        val dateFormat = when (locale.language) {
+            "fr" -> "dd/MM/yyyy" // Format pour le français
+            "en" -> "MM/dd/yyyy" // Format pour l'anglais
+            else -> "yyyy-MM-dd" // Format par défaut pour d'autres langues
+        }
+
+        val dateFormatter = DateTimeFormatter.ofPattern(dateFormat, locale)
+        return zdt.format(dateFormatter)
     }
 }
