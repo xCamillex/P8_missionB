@@ -126,7 +126,8 @@ class DetailScreenFragment : Fragment() {
                         }
                         is DetailUiState.Success -> {
                             showLoading(false)
-                            // On a maintenant un convertedSalary dans l'état
+                            // Convertir le salaire
+                            viewModel.convertSalaryToPounds(state.candidate.expectedSalary)
                             updateUIWithCandidate(state.candidate, state.convertedSalary)
                         }
                         is DetailUiState.Error -> {
@@ -138,6 +139,7 @@ class DetailScreenFragment : Fragment() {
             }
         }
     }
+
 
     /**
      * Met à jour l'UI avec les informations du candidat et le salaire converti.
@@ -169,7 +171,7 @@ class DetailScreenFragment : Fragment() {
 
         // Salaire
         binding.tvExpectedSalary.text = "${candidate.expectedSalary} €"
-        // On a maintenant un TextView pour la conversion en livres, `tvConvertedSalary`
+        // Salaire converti
         binding.tvConvertedSalary.text = convertedSalary
 
         // Notes

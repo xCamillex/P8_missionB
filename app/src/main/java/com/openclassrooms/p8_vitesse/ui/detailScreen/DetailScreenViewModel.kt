@@ -149,22 +149,39 @@ class DetailScreenViewModel @Inject constructor(
      */
     fun formatDateOfBirth(dateOfBirth: Instant): String {
         val currentLocale = Locale.getDefault()
-        return DateUtils.localeDateTimeStringFromInstant(dateOfBirth, currentLocale) ?: "Date invalide"
+        return DateUtils.localeDateTimeStringFromInstant(dateOfBirth, currentLocale)
+            ?: "Date invalide"
     }
 
 
     /**
      * Conversion du salaire en livres.
-     * Pour l'instant, on ne l'implémente pas, juste un TODO.
-     *
-     * TODO: Intégrer l'API pour convertir les euros en livres.
      * @param salaryInEuros Le salaire en euros.
-     * @return La valeur convertie en livres (String formaté).
+     * @return La valeur convertie en livres.
      */
-    fun convertSalaryToPounds(salaryInEuros: Int): String {
-        // TODO : Appeler l'API de conversion
-        // Pour l'instant, on renvoie une valeur fictive.
-        val fakeConversion = salaryInEuros * 0.86 // Juste pour illustrer, sans API réelle
-        return String.format("soit £ %.2f", fakeConversion)
+    fun convertSalaryToPounds(salaryInEuros: Int) {
+        // Appel au use case pour récupérer le taux de conversion
+        viewModelScope.launch {
+            try {
+                // Récupération du taux de conversion en livres
+                val rate = getConversionRateUseCase.execute()
+
+                // Conversion du salaire
+                val convertedSalary = salaryInEuros * rate
+
+                // Mise à jour de l'UI avec le salaire converti
+                // Utilisez le mécanisme pour notifier l'UI si nécessaire
+                _uiState.value = when (val currentState = _uiState.value) {
+                    is DetailUiState.Success -> {
+                        currentState.copy(convertedSalary = String.format("soit £ %.2f", convertedSalary))
+                    }
+                    else -> currentState
+                }
+            } catch (e: Exception) {
+                // En cas d'erreur, afficher une valeur par défaut et logguer l'erreur
+                Log.e("DetailViewModel", "Error converting salary", e)
+                _uiState.value = DetailUiState.Error("Erreur lors de la conversion du salaire")
+            }
+        }
     }
 }
