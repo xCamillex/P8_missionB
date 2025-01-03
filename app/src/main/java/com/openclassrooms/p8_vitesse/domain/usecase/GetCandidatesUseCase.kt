@@ -5,6 +5,9 @@ import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
+/**
+ * Use Case pour récupérer les candidats avec des filtres optionnels.
+ */
 class GetCandidatesUseCase @Inject constructor(
     private val candidateRepository: CandidateRepository
 ) {

@@ -1,6 +1,8 @@
 package com.openclassrooms.p8_vitesse.domain.usecase
 
 import com.openclassrooms.p8_vitesse.data.repository.CandidateRepository
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 /**
@@ -19,7 +21,7 @@ class GetAllCandidatesUseCase @Inject constructor(
      *
      * @return Un flux contenant la liste des candidats.
      */
-    suspend fun execute() {
-        repository.deleteAllCandidates()
+    fun execute(): Flow<List<Candidate>> {
+        return repository.getAllCandidates()
     }
 }

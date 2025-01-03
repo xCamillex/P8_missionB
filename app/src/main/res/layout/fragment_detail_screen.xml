@@ -88,7 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:contentDescription="@string/candidate_photo"
-                android:scaleType="centerCrop"
+                android:scaleType="fitCenter"
                 android:src="@drawable/default_avatar"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -154,7 +154,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
-                                android:text="34 ans" />
+                                android:text="@string/ans" />
 
                         </LinearLayout>
 

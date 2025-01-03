@@ -1,6 +1,8 @@
 package com.openclassrooms.p8_vitesse.ui.detailScreen
 
+import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -11,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.bumptech.glide.Glide
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.FragmentDetailScreenBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
@@ -81,7 +82,7 @@ class DetailScreenFragment : Fragment() {
             showDeleteConfirmationDialog()
         }
         deleteIcon.setOnLongClickListener {
-            Toast.makeText(requireContext(), getString(R.string.delete_confirmation), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.delete_icon), Toast.LENGTH_SHORT).show()
             true
         }
 
@@ -157,24 +158,14 @@ class DetailScreenFragment : Fragment() {
         }
 
         // Photo du candidat
-        val defaultPhotoResId = R.drawable.default_avatar
-        if (candidate.photo.isNotBlank()) {
-            // Utilisation de Glide pour charger la photo
-            Glide.with(binding.profilePhoto.context)
-                .load(candidate.photo) // URL ou chemin de la photo
-                .placeholder(defaultPhotoResId) // Image de remplacement pendant le chargement
-                .error(defaultPhotoResId) // Image en cas d'erreur de chargement
-                .into(binding.profilePhoto)
-        } else {
-            // Affiche l'image par défaut si aucune photo n'est fournie
-            binding.profilePhoto.setImageResource(defaultPhotoResId)
-        }
+        val placeholderBitmap = BitmapFactory.decodeResource(resources, R.drawable.default_avatar)
+        binding.profilePhoto.setImageBitmap(candidate.photo ?: placeholderBitmap)
 
         // A propos : date de naissance et âge
         val formattedDate = viewModel.formatDateOfBirth(candidate.dateOfBirth)
         val age = viewModel.calculateAge(candidate.dateOfBirth)
         binding.tvFragmentDetailDateOfbirth.text = formattedDate
-        binding.tvFragmentDetailAge.text = "$age ans"
+        binding.tvFragmentDetailAge.text = "$age ${getString(R.string.ans)}"
 
         // Salaire
         binding.tvExpectedSalary.text = "${candidate.expectedSalary} €"
@@ -182,7 +173,7 @@ class DetailScreenFragment : Fragment() {
         binding.tvConvertedSalary.text = convertedSalary
 
         // Notes
-        binding.tvDetailNotesToDisplay.text = candidate.informationNote ?: ""
+        binding.tvDetailNotesToDisplay.text = candidate.note ?: ""
 
         // Boutons Appel, SMS, Email
         setupContactButtons(candidate)
@@ -208,7 +199,7 @@ class DetailScreenFragment : Fragment() {
 
         // Email
         contactBinding.contactEmailButton.setOnClickListener {
-            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", candidate.emailAddress, null))
+            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", candidate.email, null))
             startActivity(Intent.createChooser(emailIntent, "Envoyer un email..."))
         }
     }
@@ -228,11 +219,11 @@ class DetailScreenFragment : Fragment() {
         }
     }
 
-     /**
+    /**
      * Affiche une boîte de dialogue pour confirmer la suppression du candidat.
      */
     private fun showDeleteConfirmationDialog() {
-        android.app.AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.delete_confirmation_title))
             .setMessage(getString(R.string.delete_confirmation_message))
             .setPositiveButton(getString(R.string.delete_confirmation)) { dialog, _ ->

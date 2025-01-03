@@ -5,10 +5,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
-import java.time.Instant
+import org.threeten.bp.Instant
 
 // Représente un candidat dans la base de données
-
 @Entity(tableName = "candidates")
 data class CandidateDto(
 
@@ -23,37 +22,37 @@ data class CandidateDto(
     val lastName: String,
 
     @ColumnInfo(name = "photo")
-    val photo: String,
+    val photo: Bitmap,
 
     @ColumnInfo(name = "phone_number")
     val phoneNumber: String,
 
     @ColumnInfo(name = "email")
-    val emailAddress: String,
+    val email: String,
 
     @ColumnInfo(name = "date_of_birth")
-    val dateOfBirth: Long,
+    val dateOfBirth: Instant,
 
     @ColumnInfo(name = "expected_salary")
     val expectedSalary: Int,
 
     @ColumnInfo(name = "note")
-    val informationNote: String,
+    val note: String?,
 
     @ColumnInfo(name = "is_favorite")
     val isFavorite: Boolean = false
 ) {
     fun toModel(): Candidate {
         return Candidate(
-            id = this.id,
+            id=if (this.id == 0L) null else this.id,
             firstName = this.firstName,
             lastName = this.lastName,
             photo = this.photo,
             phoneNumber = this.phoneNumber,
-            emailAddress = this.emailAddress,
+            email = this.email,
             dateOfBirth = this.dateOfBirth,
             expectedSalary = this.expectedSalary,
-            informationNote = this.informationNote,
+            note = this.note,
             isFavorite = this.isFavorite
         )
     }

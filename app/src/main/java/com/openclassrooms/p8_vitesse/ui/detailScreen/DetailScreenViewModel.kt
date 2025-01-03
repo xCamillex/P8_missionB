@@ -124,16 +124,15 @@ class DetailScreenViewModel @Inject constructor(
         }
     }
 
+
     /**
      * Calcule l'âge du candidat à partir de sa date de naissance.
      *
      * @param dateOfBirth La date de naissance du candidat (Instant).
      * @return L'âge en années.
      */
-    fun calculateAge(dateOfBirth: Long): Int {
-        val birthday = Instant.ofEpochMilli(dateOfBirth)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
+    fun calculateAge(dateOfBirth: Instant): Int {
+        val birthday = dateOfBirth.atZone(ZoneId.systemDefault()).toLocalDate()
         val now = LocalDate.now()
         return ChronoUnit.YEARS.between(birthday, now).toInt()
     }
@@ -143,14 +142,15 @@ class DetailScreenViewModel @Inject constructor(
      * Ici, nous faisons simple : on affiche en format "dd/MM/yyyy".
      * En pratique, on pourrait adapter selon la locale.
      *
-     * @param dateOfBirth La date de naissance.
+     * @param dateOfBirth La date de naissance (Instant).
      * @return Une chaîne de caractères formattée.
      */
-    fun formatDateOfBirth(dateOfBirth: Long): String {
-        val zdt = Instant.ofEpochMilli(dateOfBirth).atZone(ZoneId.systemDefault())
+    fun formatDateOfBirth(dateOfBirth: Instant): String {
+        val zdt = dateOfBirth.atZone(ZoneId.systemDefault())
         val day = zdt.dayOfMonth.toString().padStart(2, '0')
         val month = zdt.monthValue.toString().padStart(2, '0')
         val year = zdt.year.toString()
+        // Pour l'instant on respecte le format français "dd/MM/yyyy"
         return "$day/$month/$year"
     }
 

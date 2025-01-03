@@ -1,37 +1,38 @@
 package com.openclassrooms.p8_vitesse.domain.model
 
+import android.graphics.Bitmap
 import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
+import org.threeten.bp.Instant
 
-data class Candidate (
-    var id : Long = 0,
-    var firstName : String = "",
-    var lastName : String = "",
-    var photo : String = "",
-    var phoneNumber : String = "",
-    var emailAddress : String = "",
-    var dateOfBirth : Long = 0L,
-    var expectedSalary : Int = 0,
-    var informationNote : String = "",
-    var isFavorite : Boolean = false
+data class Candidate(
+    val id: Long? = null,
+    val firstName: String = "",
+    val lastName: String = "",
+    val photo: Bitmap? = null,
+    val phoneNumber: String = "",
+    val email: String = "",
+    val dateOfBirth: Instant = Instant.EPOCH,
+    val expectedSalary: Int = 0,
+    val note: String? = null,
+    val isFavorite: Boolean = false
 ) {
     fun toDto(): CandidateDto {
-    return CandidateDto(
-        id = this.id,
-        firstName = this.firstName,
-        lastName = this.lastName,
-        photo = this.photo,
-        phoneNumber = this.phoneNumber,
-        emailAddress = this.emailAddress,
-        dateOfBirth = this.dateOfBirth,
-        expectedSalary = this.expectedSalary,
-        informationNote = this.informationNote,
-        isFavorite = this.isFavorite
-    )
-}
+        return CandidateDto(
+            id = this.id?:0,
+            firstName = this.firstName,
+            lastName = this.lastName,
+            photo = this.photo?: defaultPlaceholderBitmap(),
+            phoneNumber = this.phoneNumber,
+            email = this.email,
+            dateOfBirth = this.dateOfBirth,
+            expectedSalary = this.expectedSalary,
+            note = this.note,
+            isFavorite = this.isFavorite
+        )
+    }
 
-    companion object {
-        fun fromDto(candidateDto: CandidateDto): Candidate {
-            return candidateDto.toModel()
-        }
+    private fun defaultPlaceholderBitmap(): Bitmap {
+        // Crée un Bitmap par défaut ou charge une ressource
+        return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
     }
 }

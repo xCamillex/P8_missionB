@@ -2,7 +2,9 @@ package com.openclassrooms.p8_vitesse.ui.homeScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import com.openclassrooms.p8_vitesse.domain.usecase.GetCandidatesUseCase
+import com.openclassrooms.p8_vitesse.domain.usecase.UpdateFavoriteStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val getCandidateUseCase: GetCandidatesUseCase,
+    private val updateFavoriteStatusUseCase: UpdateFavoriteStatusUseCase,
 ) : ViewModel() {
 
     // État de l'écran d'accueil
@@ -50,6 +53,31 @@ class HomeScreenViewModel @Inject constructor(
                 } else {
                     HomeUiState.Success(candidates)
                 }
+            }
+        }
+    }
+
+    /**
+     * Recharge la liste des candidats en fonction des derniers filtres.
+     * Utilisé après l’ajout ou la modification d’un candidat.
+     */
+    fun reloadCandidates() {
+        loadCandidates(currentFilter, showFavoritesOnly)
+    }
+
+    /**
+     * Met à jour le statut de favori d'un candidat.
+     * @param candidate Le candidat dont le statut doit être mis à jour.
+     */
+    fun updateFavoriteStatus(candidate: Candidate) {
+        viewModelScope.launch {
+            try {
+                val newStatus = !candidate.isFavorite
+                updateFavoriteStatusUseCase.execute(candidate.id!!, newStatus)
+                // Recharger les candidats après modification
+                loadCandidates(currentFilter, showFavoritesOnly)
+            } catch (exception: Exception) {
+                _uiState.value = HomeUiState.Error("Failed to update favorite status")
             }
         }
     }

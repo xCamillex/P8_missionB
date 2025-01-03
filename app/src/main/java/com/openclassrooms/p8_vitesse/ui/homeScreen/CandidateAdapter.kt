@@ -1,13 +1,12 @@
 package com.openclassrooms.p8_vitesse.ui.homeScreen
 
-import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.ItemCandidateBinding
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
@@ -15,7 +14,6 @@ import com.openclassrooms.p8_vitesse.domain.model.Candidate
 
 /**
  * Adapter pour afficher la liste des candidats dans un RecyclerView.
- *
  * @param onItemClick Fonction déclenchée lors du clic sur un candidat.
  */
 class CandidateAdapter(
@@ -24,33 +22,29 @@ class CandidateAdapter(
 
     /**
      * ViewHolder pour un élément candidat.
-     *
      * @param binding Liaison des vues avec le layout XML.
      * @param onItemClick Fonction de clic pour un candidat.
      */
     class CandidateViewHolder(
         private val binding: ItemCandidateBinding,
-        private val onItemClick: (Candidate) -> Unit,
+        private val onItemClick: (Candidate) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         /**
          * Lie un candidat aux vues.
-         *
          * @param candidate Le candidat à afficher.
          */
         fun bind(candidate: Candidate) {
             binding.candidateName.text = "${candidate.firstName} ${candidate.lastName}"
-            binding.candidateNote.text = candidate.informationNote ?: ""
+            binding.candidateNote.text = candidate.note ?: ""
 
-            val placeholderDrawable = ContextCompat.getDrawable(binding.root.context, R.drawable.default_avatar)
+            val placeholderBitmap: Bitmap = BitmapFactory.decodeResource(
+                binding.root.context.resources,
+                R.drawable.default_avatar
+            )
+            binding.candidatePhoto.setImageBitmap(candidate.photo ?: placeholderBitmap)
 
-            Glide.with(binding.root.context)
-                .load(candidate.photo)
-                .placeholder(placeholderDrawable)
-                .error(R.drawable.ic_person)
-                .into(binding.candidatePhoto)
-
-            // Clic sur l'élément
+            // Ajout de l'action de clic
             binding.root.setOnClickListener {
                 onItemClick(candidate)
             }

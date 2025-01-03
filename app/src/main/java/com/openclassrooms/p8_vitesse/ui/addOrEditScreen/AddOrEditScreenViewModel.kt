@@ -1,5 +1,6 @@
 package com.openclassrooms.p8_vitesse.ui.addOrEditScreen
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.p8_vitesse.R
@@ -10,8 +11,8 @@ import com.openclassrooms.p8_vitesse.domain.usecase.UpdateCandidateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.threeten.bp.Instant
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -25,13 +26,25 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AddOrEditScreenViewModel @Inject constructor(
+    /**
+     * Use case pour insérer un candidat dans la base de données.
+     * Utilisé lorsqu'on ajoute un nouveau candidat.
+     */
     private val insertCandidateUseCase: InsertCandidateUseCase,
-    private val updateCandidateUseCase: UpdateCandidateUseCase,
+
+    /**
+     * Use case pour récupérer un candidat grâce à son identifiant.
+     * Utilisé lorsqu'on est en mode édition pour pré-remplir les champs.
+     */
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
 
-    ) : ViewModel() {
-
-    // État actuel de l'opération (on démmarre avec l'état Idle)
+    /**
+     * Use case pour mettre à jour un candidat existant.
+     * Utilisé en mode édition, quand l'utilisateur modifie les informations d'un candidat.
+     */
+    private val updateCandidateUseCase: UpdateCandidateUseCase
+) : ViewModel() {
+    // État de l'UI : on part d'un état Idle sans erreur, sans chargement, sans données pré-remplies
     private val _uiState = MutableStateFlow<AddOrEditUiState>(AddOrEditUiState.Idle)
     val uiState: StateFlow<AddOrEditUiState> = _uiState
 
@@ -41,10 +54,10 @@ class AddOrEditScreenViewModel @Inject constructor(
     private var lastName: String = ""
     private var phone: String = ""
     private var email: String = ""
-    private var dateOfBirth: Long? = null
+    private var dateOfBirth: Instant? = null
     private var salary: Int? = null
     private var notes: String = ""
-    private var photo: String? = null
+    private var photo: Bitmap? = null
 
     // Méthode pour initialiser l'écran
     // Si on passe un candidateId existant, on charge le candidat et pré-remplit les champs.
@@ -86,10 +99,10 @@ class AddOrEditScreenViewModel @Inject constructor(
                     firstName = candidate.firstName
                     lastName = candidate.lastName
                     phone = candidate.phoneNumber
-                    email = candidate.emailAddress
+                    email = candidate.email
                     dateOfBirth = candidate.dateOfBirth
                     salary = candidate.expectedSalary
-                    notes = candidate.informationNote ?: ""
+                    notes = candidate.note ?: ""
                     photo = candidate.photo
                     // On met à jour l'UI avec les données existantes
                     _uiState.value = AddOrEditUiState.Loaded(
@@ -127,14 +140,8 @@ class AddOrEditScreenViewModel @Inject constructor(
         email = value
     }
 
-    fun onDateOfBirthSelected(dateInMillis: Long) {
-        _uiState.update { currentState ->
-            if (currentState is AddOrEditUiState.Loaded) {
-                currentState.copy(dateOfBirth = dateInMillis)
-            } else {
-                currentState
-            }
-        }
+    fun onDateOfBirthSelected(value: Instant) {
+        dateOfBirth = value
     }
 
     fun onSalaryChanged(value: String) {
@@ -145,9 +152,8 @@ class AddOrEditScreenViewModel @Inject constructor(
         notes = value
     }
 
-    fun onPhotoSelected(photoPath: String) {
-        // Enregistrer ou mettre à jour la photo avec le chemin de l'image
-        photo = photoPath
+    fun onPhotoSelected(bitmap: Bitmap) {
+        photo = bitmap
     }
 
     // Méthode déclenchée lorsque l'utilisateur clique sur "Sauvegarder"
@@ -162,6 +168,8 @@ class AddOrEditScreenViewModel @Inject constructor(
         if (phone.isBlank()) emptyFields.add(AddOrEditUiState.MandatoryField.PHONE)
         if (email.isBlank()) emptyFields.add(AddOrEditUiState.MandatoryField.EMAIL)
         if (dateOfBirth == null) emptyFields.add(AddOrEditUiState.MandatoryField.DATE_OF_BIRTH)
+        if (salary == null) emptyFields.add(AddOrEditUiState.MandatoryField.EXPECTED_SALARY)
+        if (notes.isBlank()) emptyFields.add(AddOrEditUiState.MandatoryField.NOTES)
 
         if (emptyFields.isNotEmpty()) {
             _uiState.value = AddOrEditUiState.ErrorMandatoryFields(
@@ -181,15 +189,15 @@ class AddOrEditScreenViewModel @Inject constructor(
         _uiState.value = AddOrEditUiState.Loading
 
         val candidateToSave = Candidate(
-            id = if (candidateId > 0) candidateId else 0,
+            id = if (candidateId > 0) candidateId else null,
             firstName = firstName,
             lastName = lastName,
-            photo = photo ?: "", // S'il est null, on affichera placeholder côté UI
+            photo = photo, // S'il est null, on affichera placeholder côté UI
             phoneNumber = phone,
-            emailAddress = email,
+            email = email,
             dateOfBirth = dateOfBirth!!, // Non null car checké
             expectedSalary = salary ?: 0,
-            informationNote = notes,
+            note = notes,
             isFavorite = false
         )
 

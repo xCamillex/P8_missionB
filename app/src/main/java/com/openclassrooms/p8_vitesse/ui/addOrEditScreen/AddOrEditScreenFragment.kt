@@ -1,6 +1,7 @@
 package com.openclassrooms.p8_vitesse.ui.addOrEditScreen
 
 import android.app.DatePickerDialog
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -13,12 +14,14 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.bumptech.glide.Glide
 import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.databinding.FragmentAddOrEditScreenBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 import java.util.Calendar
 
 
@@ -30,26 +33,25 @@ class AddOrEditScreenFragment : Fragment() {
 
     private val viewModel: AddOrEditScreenViewModel by viewModels()
 
+    // Lanceur pour ouvrir la galerie et récupérer une image
     private val imagePickerLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         // Cette fonction est appelée quand l'utilisateur a sélectionné une image dans la galerie
         if (uri != null) {
-            // Convertir l'URI en String (par exemple, en chemin de fichier)
-            val photoPath = uri.toString()
-
-            // On informe le ViewModel de la nouvelle photo (en tant que String)
-            viewModel.onPhotoSelected(photoPath)
-
-            // Mettre à jour l'affichage de l'image avec l'URI (en tant qu'image via Glide ou autre méthode de chargement d'image)
-            Glide.with(requireContext())
-                .load(uri)
-                .into(binding.candidatePhoto)
-
-            Log.d("AddEditFragment", "Image chargée avec succès.")
+            val bitmap = loadBitmapFromUri(uri)
+            if (bitmap != null) {
+                Log.d("AddEditFragment", "Image chargée avec succès.")
+                // On informe le ViewModel de la nouvelle photo
+                viewModel.onPhotoSelected(bitmap)
+                // On met à jour l'affichage
+                binding.candidatePhoto.setImageBitmap(bitmap)
+            } else {
+                Log.e("AddEditFragment", "Impossible de charger l'image depuis l'URI: $uri")
+                Toast.makeText(requireContext(), "Impossible de charger l'image", Toast.LENGTH_SHORT).show()
+            }
         } else {
             Log.e("AddEditFragment", "URI de l'image est null.")
-            Toast.makeText(requireContext(), "Impossible de charger l'image", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -57,11 +59,16 @@ class AddOrEditScreenFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentAddOrEditScreenBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+
+    /**
+     * Appelé lorsque la vue est créée.
+     * On y fait les initialisations UI et l'observation du ViewModel.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -74,6 +81,7 @@ class AddOrEditScreenFragment : Fragment() {
         setupPhotoClickListener()
         setupDatePickerClickListener()
         setupSaveButtonClickListener()
+
         observeViewModel()
     }
 
@@ -133,7 +141,6 @@ class AddOrEditScreenFragment : Fragment() {
                 viewModel.uiState.collectLatest { state ->
                     when (state) {
                         is AddOrEditUiState.Idle -> {
-                            // Rien de spécial
                         }
                         is AddOrEditUiState.Loading -> {
                             showLoading(true)
@@ -175,11 +182,8 @@ class AddOrEditScreenFragment : Fragment() {
     private fun updateUIWithData(state: AddOrEditUiState.Loaded) {
         binding.topAppBar.setTitle(state.titleResId)
 
-        // Vérifier si l'URI de la photo est disponible et l'afficher
         if (state.photo != null) {
-            Glide.with(requireContext())
-                .load(state.photo) // Utiliser l'URI de la photo ici
-                .into(binding.candidatePhoto)
+            binding.candidatePhoto.setImageBitmap(state.photo)
         } else {
             binding.candidatePhoto.setImageResource(R.drawable.default_avatar)
         }
@@ -229,15 +233,9 @@ class AddOrEditScreenFragment : Fragment() {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
         val dpd = DatePickerDialog(requireContext(), { _, y, m, d ->
-// Mettre à jour le calendrier avec la date sélectionnée
-            calendar.set(y, m, d)
-
-            // Convertir en timestamp (Long) et le passer au ViewModel
-            val chosenDateInMillis = calendar.timeInMillis
-            viewModel.onDateOfBirthSelected(chosenDateInMillis)
-
-            // Mettre à jour le champ avec une version lisible de la date
-            binding.tieAddEditDateOfBirth.setText(formatDate(chosenDateInMillis))
+            val chosenDate = ZonedDateTime.of(y, m + 1, d, 0, 0, 0, 0, ZoneId.systemDefault()).toInstant()
+            viewModel.onDateOfBirthSelected(chosenDate)
+            binding.tieAddEditDateOfBirth.setText(formatDate(chosenDate))
         }, year, month, day)
 
         // Empêche de sélectionner une date future
@@ -247,16 +245,23 @@ class AddOrEditScreenFragment : Fragment() {
     }
 
     /**
-     * Convertit en texte lisible "jj/mm/aaaa".
+     * Convertit un Instant (date-heure universelle) en texte lisible "jj/mm/aaaa".
      */
-    private fun formatDate(timestamp: Long): String {
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = timestamp
-        }
-        val day = calendar.get(Calendar.DAY_OF_MONTH).toString().padStart(2, '0')
-        val month = (calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0') // +1 car JANVIER = 0
-        val year = calendar.get(Calendar.YEAR).toString()
+    private fun formatDate(instant: Instant): String {
+        val zdt = instant.atZone(ZoneId.systemDefault())
+        val day = zdt.dayOfMonth.toString().padStart(2, '0')
+        val month = zdt.monthValue.toString().padStart(2, '0')
+        val year = zdt.year.toString()
         return "$day/$month/$year"
+    }
+
+    /**
+     * Charge un Bitmap à partir d'une Uri (image de la galerie).
+     * Retourne le Bitmap ou null si échec.
+     */
+    private fun loadBitmapFromUri(uri: Uri): android.graphics.Bitmap? {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        return BitmapFactory.decodeStream(inputStream)
     }
 
     /**
@@ -274,6 +279,8 @@ class AddOrEditScreenFragment : Fragment() {
                 AddOrEditUiState.MandatoryField.PHONE -> binding.tilPhone.error = getString(R.string.missing_fields_error)
                 AddOrEditUiState.MandatoryField.EMAIL -> binding.tilEmail.error = getString(R.string.missing_fields_error)
                 AddOrEditUiState.MandatoryField.DATE_OF_BIRTH -> binding.tilAddEditDateOfBirth.error = getString(R.string.missing_fields_error)
+                AddOrEditUiState.MandatoryField.EXPECTED_SALARY -> binding.tilSalary.error = getString(R.string.missing_fields_error)
+                AddOrEditUiState.MandatoryField.NOTES -> binding.tilSalary.error = getString(R.string.missing_fields_error)
             }
         }
     }
@@ -287,6 +294,8 @@ class AddOrEditScreenFragment : Fragment() {
         binding.tilPhone.error = null
         binding.tilEmail.error = null
         binding.tilAddEditDateOfBirth.error = null
+        binding.tilSalary.error = null
+        binding.tilNotes.error = null
     }
 
     override fun onDestroyView() {

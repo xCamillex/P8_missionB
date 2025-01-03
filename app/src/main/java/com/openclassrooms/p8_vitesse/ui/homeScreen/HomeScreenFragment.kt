@@ -91,7 +91,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Configure le RecyclerView avec l'adapter et la disposition des éléments.
+     * Configure le RecyclerView et son adapter.
      */
     private fun setupRecyclerView() {
         candidateAdapter = CandidateAdapter { candidate ->
@@ -104,7 +104,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Configure le TabLayout pour gérer les filtres "Tous" et "Favoris".
+     * Configure le TabLayout avec des onglets dédiés pour "Tous" et "Favoris".
      */
     private fun setupTabLayout() {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.tab_all)) // 🇫🇷 Tous
@@ -155,6 +155,7 @@ class HomeScreenFragment : Fragment() {
 
     /**
      * Affiche les candidats dans le RecyclerView.
+     * @param candidates La liste des candidats à afficher.
      */
     private fun showCandidates(candidates: List<Candidate>) {
         _binding?.let {
@@ -176,6 +177,7 @@ class HomeScreenFragment : Fragment() {
 
     /**
      * Affiche un message d'erreur.
+     * @param message Le message d'erreur à afficher.
      */
     private fun showError(message: String) {
         binding.progressBar.visibility = View.GONE

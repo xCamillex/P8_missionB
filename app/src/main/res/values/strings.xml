@@ -51,6 +51,7 @@
     <string name="navigation_back">retour</string>
     <string name="candidate_added_successfully">Candidat ajouté avec succès</string>
     <string name="anniversaire">Anniversaire</string>
+    <string name="ans">ans</string>
 
 
 </resources>

@@ -4,7 +4,10 @@ import android.graphics.Bitmap
 import org.threeten.bp.Instant
 
 /**
- * Représente les différents états de l'interface utilisateur pour le fragment Add/Edit.
+ * État de l'interface utilisateur pour l'écran Add/Edit.
+ *
+ * On utilise une sealed class pour représenter les différents états.
+ * Le Fragment va observer cet état et réagir en fonction.
  */
 sealed class AddOrEditUiState {
     /**
@@ -34,12 +37,12 @@ sealed class AddOrEditUiState {
     data class Loaded(
         val titleResId: Int,
         val isEditing: Boolean,
-        val photo: String?,
+        val photo: Bitmap?,
         val firstName: String,
         val lastName: String,
         val phone: String,
         val email: String,
-        val dateOfBirth: Long?,
+        val dateOfBirth: Instant?,
         val salary: String,
         val notes: String
     ) : AddOrEditUiState()
@@ -73,6 +76,8 @@ sealed class AddOrEditUiState {
         LAST_NAME,
         PHONE,
         EMAIL,
-        DATE_OF_BIRTH
+        DATE_OF_BIRTH,
+        EXPECTED_SALARY,
+        NOTES
     }
 }

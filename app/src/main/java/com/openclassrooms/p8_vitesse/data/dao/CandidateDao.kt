@@ -7,9 +7,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
-import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import kotlinx.coroutines.flow.Flow
 
+// Interface DAO pour gérer les opérations sur les candidats
 @Dao
 interface CandidateDao {
 
@@ -42,9 +42,11 @@ interface CandidateDao {
     @Query("DELETE FROM candidates")
     suspend fun deleteAllCandidates()
 
+    // Lire un candidat par son ID
     @Query("SELECT * FROM candidates WHERE id = :id ")
-    fun getById(id: Long): Flow<CandidateDto>
+    fun getById(id: Long): Flow<CandidateDto?>
 
+    // Mettre à jour le statut de favori d'un candidat
     @Query("UPDATE candidates SET is_favorite = :favorite WHERE id = :id")
     suspend fun updateCandidate(id: Long, favorite: Boolean) : Int
 

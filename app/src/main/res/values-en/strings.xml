@@ -49,6 +49,7 @@
     <string name="navigation_back">return</string>
     <string name="candidate_added_successfully">Candidate added successfully</string>
     <string name="anniversaire">Anniversary</string>
+    <string name="ans">years old</string>
 
 
 </resources>

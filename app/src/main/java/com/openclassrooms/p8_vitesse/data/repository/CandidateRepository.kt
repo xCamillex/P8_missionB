@@ -1,6 +1,5 @@
 package com.openclassrooms.p8_vitesse.data.repository
 
-import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import kotlinx.coroutines.flow.Flow
 
@@ -28,7 +27,7 @@ interface CandidateRepository {
      * @param id L'identifiant unique du candidat.
      * @return Un flux contenant le candidat correspondant.
      */
-    fun getById(id: Long): Flow<Candidate>
+    fun getById(id: Long): Flow<Candidate?>
 
     /**
      * Ajouter ou mettre à jour un candidat.
