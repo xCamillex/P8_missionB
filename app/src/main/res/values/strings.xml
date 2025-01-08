@@ -52,6 +52,20 @@
     <string name="candidate_added_successfully">Candidat ajouté avec succès</string>
     <string name="anniversaire">Anniversaire</string>
     <string name="ans">ans</string>
-
+    <string name="image_load_error">Impossible de charger l image</string>
+    <string name="candidate_not_found">Candidat introuvable</string>
+    <string name="error_saving_candidate">Erreur lors de la sauvegarde du candidat</string>
+    <string name="candidate_updated_successfully">Candidat mis à jour avec succès</string>
+    <string name="mandatory_fields_error">Veuillez remplir tous les champs obligatoires.</string>
+    <string name="send_email">Envoyer un email</string>
+    <string name="error_loading_candidate">Erreur lors du chargement du candidat</string>
+    <string name="salary_format">soit £ %.2f</string>
+    <string name="salary_conversion_error">Erreur lors de la conversion du salaire</string>
+    <string name="error_favorite_toggle">Impossible de changer le statut favori</string>
+    <string name="error_deleting_candidate">Erreur lors de la suppression du candidat</string>
+    <string name="favorite_status_error">Impossible de changer le statut favori</string>
+    <string name="delete_error_message">Erreur lors de la suppression du candidat</string>
+    <string name="generic_error_message">Une erreur inconnue s est produite</string>
+    <string name="favorite_status_update_error">Échec de la mise à jour du statut favori</string>
 
 </resources>

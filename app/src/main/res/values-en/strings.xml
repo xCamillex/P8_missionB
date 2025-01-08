@@ -50,6 +50,21 @@
     <string name="candidate_added_successfully">Candidate added successfully</string>
     <string name="anniversaire">Anniversary</string>
     <string name="ans">years old</string>
+    <string name="image_load_error">Unable to load the image</string>
+    <string name="candidate_not_found">Candidate not found</string>
+    <string name="error_saving_candidate">Error saving candidate</string>
+    <string name="candidate_updated_successfully">Candidate updated successfully</string>
+    <string name="mandatory_fields_error">Please fill in all mandatory fields.</string>
+    <string name="send_email">Send an email</string>
+    <string name="error_loading_candidate">Error loading candidate</string>
+    <string name="salary_format">or £ %.2f</string>
+    <string name="salary_conversion_error">Error converting salary</string>
+    <string name="error_favorite_toggle">Unable to change favorite status</string>
+    <string name="error_deleting_candidate">Error deleting candidate</string>
+    <string name="favorite_status_error">Unable to change favorite status</string>
+    <string name="delete_error_message">Error deleting candidate</string>
+    <string name="generic_error_message">An unknown error has occurred</string>
+    <string name="favorite_status_update_error">Failed to update favorite status</string>
 
 
 </resources>

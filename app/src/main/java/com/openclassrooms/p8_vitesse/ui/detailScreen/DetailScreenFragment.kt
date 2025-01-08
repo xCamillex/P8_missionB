@@ -50,9 +50,9 @@ class DetailScreenFragment : Fragment() {
 
         candidateId = arguments?.getLong("candidate_id", -1L) ?: -1L
         if (candidateId > 0) {
-            viewModel.loadCandidate(candidateId)
+            viewModel.loadCandidate(candidateId, getString(R.string.candidate_not_found))
         } else {
-            Toast.makeText(requireContext(), "Candidat introuvable", Toast.LENGTH_SHORT).show()
+            viewModel.showError(getString(R.string.candidate_not_found))
             parentFragmentManager.popBackStack()
         }
 
@@ -105,7 +105,7 @@ class DetailScreenFragment : Fragment() {
 
         // Favori
         favoriteIcon.setOnClickListener {
-            viewModel.toggleFavoriteStatus()
+            viewModel.toggleFavoriteStatus(getString(R.string.favorite_status_error))
         }
         favoriteIcon.setOnLongClickListener {
             Toast.makeText(requireContext(), getString(R.string.favorite_icon), Toast.LENGTH_SHORT).show()
@@ -202,7 +202,7 @@ class DetailScreenFragment : Fragment() {
         // Email
         contactBinding.contactEmailButton.setOnClickListener {
             val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", candidate.email, null))
-            startActivity(Intent.createChooser(emailIntent, "Envoyer un email..."))
+            startActivity(Intent.createChooser(emailIntent,  getString(R.string.send_email)))
         }
     }
 
@@ -229,7 +229,7 @@ class DetailScreenFragment : Fragment() {
             .setTitle(getString(R.string.delete_confirmation_title))
             .setMessage(getString(R.string.delete_confirmation_message))
             .setPositiveButton(getString(R.string.delete_confirmation)) { dialog, _ ->
-                viewModel.deleteCurrentCandidate()
+                viewModel.deleteCurrentCandidate(getString(R.string.delete_error_message))
                 dialog.dismiss()
                 // Retour à l'accueil
                 parentFragmentManager.popBackStack()

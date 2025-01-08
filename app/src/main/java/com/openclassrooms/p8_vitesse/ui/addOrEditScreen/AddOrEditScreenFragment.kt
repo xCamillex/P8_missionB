@@ -48,7 +48,7 @@ class AddOrEditScreenFragment : Fragment() {
                 binding.candidatePhoto.setImageBitmap(bitmap)
             } else {
                 Log.e("AddEditFragment", "Impossible de charger l'image depuis l'URI: $uri")
-                Toast.makeText(requireContext(), "Impossible de charger l'image", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.image_load_error), Toast.LENGTH_SHORT).show()
             }
         } else {
             Log.e("AddEditFragment", "URI de l'image est null.")

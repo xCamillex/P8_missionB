@@ -1,5 +1,6 @@
 package com.openclassrooms.p8_vitesse.ui.addOrEditScreen
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import com.openclassrooms.p8_vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.openclassrooms.p8_vitesse.domain.usecase.InsertCandidateUseCase
 import com.openclassrooms.p8_vitesse.domain.usecase.UpdateCandidateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,6 +28,9 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class AddOrEditScreenViewModel @Inject constructor(
+
+    @ApplicationContext private val context: Context,
+
     /**
      * Use case pour insérer un candidat dans la base de données.
      * Utilisé lorsqu'on ajoute un nouveau candidat.
@@ -93,7 +98,8 @@ class AddOrEditScreenViewModel @Inject constructor(
             getCandidateByIdUseCase.execute(id).collect { candidate ->
                 if (candidate == null) {
                     // Aucune donnée => Erreur
-                    _uiState.value = AddOrEditUiState.Error("Candidat introuvable")
+                    val errorMessage = context.getString(R.string.candidate_not_found)
+                    _uiState.value = AddOrEditUiState.Error(errorMessage)
                 } else {
                     // On remplit nos variables internes
                     firstName = candidate.firstName
@@ -172,16 +178,15 @@ class AddOrEditScreenViewModel @Inject constructor(
         if (notes.isBlank()) emptyFields.add(AddOrEditUiState.MandatoryField.NOTES)
 
         if (emptyFields.isNotEmpty()) {
-            _uiState.value = AddOrEditUiState.ErrorMandatoryFields(
-                "Veuillez remplir tous les champs obligatoires.",
-                emptyFields
-            )
+            val errorMessage = context.getString(R.string.mandatory_fields_error)
+            _uiState.value = AddOrEditUiState.ErrorMandatoryFields(errorMessage, emptyFields)
             return
         }
 
         // Vérifier le format de l'email
         if (!isEmailValid(email)) {
-            _uiState.value = AddOrEditUiState.ErrorEmailFormat("Format d'email invalide.")
+            val errorMessage = context.getString(R.string.invalid_email_format)
+            _uiState.value = AddOrEditUiState.ErrorEmailFormat(errorMessage)
             return
         }
 
@@ -206,14 +211,17 @@ class AddOrEditScreenViewModel @Inject constructor(
                 if (candidateId > 0) {
                     // Mise à jour
                     updateCandidateUseCase.invoke(candidateToSave)
-                    _uiState.value = AddOrEditUiState.Success("Candidat mis à jour avec succès")
+                    val successMessage = context.getString(R.string.candidate_updated_successfully)
+                    _uiState.value = AddOrEditUiState.Success(successMessage)
                 } else {
                     // Ajout
                     insertCandidateUseCase.invoke(candidateToSave)
-                    _uiState.value = AddOrEditUiState.Success("Candidat ajouté avec succès")
+                    val successMessage = context.getString(R.string.candidate_added_successfully)
+                    _uiState.value = AddOrEditUiState.Success(successMessage)
                 }
             } catch (e: Exception) {
-                _uiState.value = AddOrEditUiState.Error("Erreur lors de la sauvegarde.")
+                val errorMessage = context.getString(R.string.error_saving_candidate)
+                _uiState.value = AddOrEditUiState.Error(errorMessage)
             }
         }
     }

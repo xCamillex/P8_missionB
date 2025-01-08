@@ -1,17 +1,21 @@
 package com.openclassrooms.p8_vitesse.ui.homeScreen
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.openclassrooms.p8_vitesse.R
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import com.openclassrooms.p8_vitesse.domain.usecase.GetCandidatesUseCase
 import com.openclassrooms.p8_vitesse.domain.usecase.UpdateFavoriteStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 /**
  * ViewModel pour gérer l'état de l'écran d'accueil (HomeScreen).
@@ -20,6 +24,7 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val getCandidateUseCase: GetCandidatesUseCase,
     private val updateFavoriteStatusUseCase: UpdateFavoriteStatusUseCase,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     // État de l'écran d'accueil
@@ -46,7 +51,8 @@ class HomeScreenViewModel @Inject constructor(
                 favorite = if (favoritesOnly) true else null,
                 name = filter
             ).catch { exception ->
-                _uiState.value = HomeUiState.Error(exception.message ?: "Unknown error")
+                _uiState.value = HomeUiState.Error(
+                    context.getString(R.string.generic_error_message) )
             }.collectLatest { candidates ->
                 _uiState.value = if (candidates.isEmpty()) {
                     HomeUiState.Empty
@@ -77,7 +83,7 @@ class HomeScreenViewModel @Inject constructor(
                 // Recharger les candidats après modification
                 loadCandidates(currentFilter, showFavoritesOnly)
             } catch (exception: Exception) {
-                _uiState.value = HomeUiState.Error("Failed to update favorite status")
+                _uiState.value = HomeUiState.Error(context.getString(R.string.favorite_status_update_error))
             }
         }
     }

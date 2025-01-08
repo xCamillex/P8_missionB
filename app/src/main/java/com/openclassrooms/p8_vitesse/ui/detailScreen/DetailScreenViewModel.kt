@@ -46,6 +46,11 @@ class DetailScreenViewModel @Inject constructor(
     // On stocke le candidat courant après l'avoir chargé pour pouvoir modifier son statut favori ou le supprimer
     private var currentCandidate: Candidate? = null
 
+    // Afficher une erreur avec un message passé depuis le Fragment
+    fun showError(message: String) {
+        _uiState.value = DetailUiState.Error(message)
+    }
+
     /**
      * Charge un candidat par son ID.
      * Si le candidat existe, met à jour l'état avec [DetailUiState.Success].
@@ -54,17 +59,17 @@ class DetailScreenViewModel @Inject constructor(
      * @param candidateId L'ID du candidat à afficher
      * Charge un candidat par son ID et calcule le salaire en livres.
      */
-    fun loadCandidate(candidateId: Long) {
+    fun loadCandidate(candidateId: Long, errorMessage: String) {
         _uiState.value = DetailUiState.Loading
         viewModelScope.launch {
             getCandidateByIdUseCase.execute(candidateId)
                 .catch { exception ->
                     Log.e("DetailViewModel", "Error fetching candidate", exception)
-                    _uiState.value = DetailUiState.Error(exception.message ?: "Erreur inconnue")
+                    _uiState.value = DetailUiState.Error(errorMessage)
                 }
                 .collectLatest { candidate ->
                     if (candidate == null) {
-                        _uiState.value = DetailUiState.Error("Candidat introuvable")
+                        _uiState.value = DetailUiState.Error(errorMessage)
                     } else {
                         currentCandidate = candidate
                         val convertedSalary = try {
@@ -90,7 +95,7 @@ class DetailScreenViewModel @Inject constructor(
      * Si le candidat est favori, il devient non-favori.
      * Si le candidat n'est pas favori, il devient favori.
      */
-    fun toggleFavoriteStatus() {
+    fun toggleFavoriteStatus(errorMessage: String) {
         val candidate = currentCandidate ?: return
         viewModelScope.launch {
             try {
@@ -103,7 +108,7 @@ class DetailScreenViewModel @Inject constructor(
                     _uiState.value = oldState.copy(candidate = currentCandidate!!)
                 }
             } catch (e: Exception) {
-                _uiState.value = DetailUiState.Error("Impossible de changer le statut favori")
+                _uiState.value = DetailUiState.Error(errorMessage)
             }
         }
     }
@@ -114,14 +119,14 @@ class DetailScreenViewModel @Inject constructor(
      *
      * Cette méthode est appelée après confirmation dans le Fragment.
      */
-    fun deleteCurrentCandidate() {
+    fun deleteCurrentCandidate(errorMessage: String) {
         val candidate = currentCandidate ?: return
         viewModelScope.launch {
             try {
                 deleteCandidateUseCase.execute(candidate)
                 // Le fragment gère le retour en arrière
             } catch (e: Exception) {
-                _uiState.value = DetailUiState.Error("Erreur lors de la suppression")
+                _uiState.value = DetailUiState.Error(errorMessage)
             }
         }
     }
