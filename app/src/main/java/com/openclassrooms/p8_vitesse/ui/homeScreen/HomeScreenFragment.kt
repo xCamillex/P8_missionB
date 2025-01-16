@@ -22,17 +22,27 @@ import com.openclassrooms.p8_vitesse.ui.detailScreen.DetailScreenFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+/**
+ * Fragment représentant l'écran d'accueil, où la liste des candidats est affichée.
+ * Ce fragment gère l'affichage des candidats dans un RecyclerView, la barre de recherche,
+ * les filtres par onglets (Tous et Favoris), et les interactions avec le ViewModel.
+ */
 @AndroidEntryPoint
 class HomeScreenFragment : Fragment() {
 
+    // Lien vers la vue avec ViewBinding
     private var _binding: FragmentHomeScreenBinding? = null
     private val binding get() = _binding!!
 
+    // Référence au ViewModel
     private val viewModel: HomeScreenViewModel by viewModels()
 
-    // Adapter pour le RecyclerView
+    // Adaptateur pour le RecyclerView
     private lateinit var candidateAdapter: CandidateAdapter
 
+    /**
+     * Inflater le layout de ce fragment.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,8 +52,13 @@ class HomeScreenFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Méthode appelée après l'inflation de la vue, pour configurer les éléments interactifs.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Configurer le RecyclerView, la barre de recherche et les onglets
         setupRecyclerView()
         setupTabLayout()
         setupSearchBar()
@@ -52,14 +67,14 @@ class HomeScreenFragment : Fragment() {
         // Charger les candidats initiaux
         viewModel.loadCandidates()
 
-        // Configuration du FAB pour naviguer vers AddEditFragment
+        // Configuration du Floating Action Button (FAB) pour naviguer vers l'écran d'ajout/modification
         binding.fabAddCandidate.setOnClickListener {
             navigateToAddEditFragment()
         }
     }
 
     /**
-     * Navigue vers le fragment AddEditFragment pour ajouter un candidat.
+     * Navigue vers le fragment AddOrEditScreenFragment pour ajouter ou modifier un candidat.
      */
     private fun navigateToAddEditFragment() {
         parentFragmentManager.beginTransaction()
@@ -72,7 +87,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Configure la barre de recherche.
+     * Configure la barre de recherche pour filtrer les candidats en fonction de l'entrée de l'utilisateur.
      */
     private fun setupSearchBar() {
         binding.searchEditText.addTextChangedListener(object : TextWatcher {
@@ -91,7 +106,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Configure le RecyclerView et son adapter.
+     * Configure le RecyclerView pour afficher les candidats.
      */
     private fun setupRecyclerView() {
         candidateAdapter = CandidateAdapter { candidate ->
@@ -104,10 +119,10 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Configure le TabLayout avec des onglets dédiés pour "Tous" et "Favoris".
+     * Configure les onglets de filtrage (Tous et Favoris) dans le TabLayout.
      */
     private fun setupTabLayout() {
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.tab_all)) // 🇫🇷 Tous
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.tab_all))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.tab_favorites))
 
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -127,7 +142,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Observe les changements d'état dans le ViewModel.
+     * Observe les changements d'état du ViewModel et met à jour l'UI en conséquence.
      */
     private fun observeViewModel() {
         lifecycleScope.launch {
@@ -145,7 +160,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Affiche l'état de chargement.
+     * Affiche l'état de chargement lorsque les candidats sont en train d'être récupérés.
      */
     private fun showLoadingState() {
         binding.progressBar.visibility = View.VISIBLE
@@ -154,8 +169,8 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Affiche les candidats dans le RecyclerView.
-     * @param candidates La liste des candidats à afficher.
+     * Affiche la liste des candidats dans le RecyclerView.
+     * @param candidates Liste des candidats à afficher.
      */
     private fun showCandidates(candidates: List<Candidate>) {
         _binding?.let {
@@ -167,7 +182,7 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Affiche un message d'état vide si aucun candidat n'est disponible.
+     * Affiche un état vide si aucune donnée n'est disponible.
      */
     private fun showEmptyState() {
         binding.progressBar.visibility = View.GONE
@@ -176,8 +191,8 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Affiche un message d'erreur.
-     * @param message Le message d'erreur à afficher.
+     * Affiche un message d'erreur si une erreur survient lors du chargement des candidats.
+     * @param message Message d'erreur à afficher.
      */
     private fun showError(message: String) {
         binding.progressBar.visibility = View.GONE
@@ -187,7 +202,8 @@ class HomeScreenFragment : Fragment() {
     }
 
     /**
-     * Action lors du clic sur un candidat.
+     * Action lorsqu'un candidat est sélectionné dans la liste.
+     * Navigue vers un fragment de détails du candidat.
      * @param candidate Le candidat sélectionné.
      */
     private fun onCandidateClicked(candidate: Candidate) {
@@ -202,6 +218,9 @@ class HomeScreenFragment : Fragment() {
             .commit()
     }
 
+    /**
+     * Libère la référence au binding lors de la destruction de la vue.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

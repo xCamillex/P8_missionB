@@ -11,24 +11,22 @@ import com.openclassrooms.p8_vitesse.data.convert.BitmapConverter
 import com.openclassrooms.p8_vitesse.data.convert.InstantConverter
 import com.openclassrooms.p8_vitesse.data.dao.CandidateDao
 import com.openclassrooms.p8_vitesse.data.entity.CandidateDto
-import com.openclassrooms.p8_vitesse.utils.BitmapUtils
+import com.openclassrooms.p8_vitesse.utils.FakeCandidatesProvider
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import org.threeten.bp.Instant
 
-
-@Database(entities = [CandidateDto::class], version = 2)
+@Database(entities = [CandidateDto::class], version = 1)
 @TypeConverters(BitmapConverter::class, InstantConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun candidateDao(): CandidateDao
 
-
     private class AppDatabaseCallback(
         private val scope: CoroutineScope
     ) : Callback() {
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-            Log.d(TAG, "onCreate called")
+        override fun onOpen(db: SupportSQLiteDatabase) {
+            super.onOpen(db)
+            Log.d(TAG, "onOpen called")
             INSTANCE?.let { database ->
                 scope.launch {
                     initDatabase(
@@ -45,25 +43,18 @@ abstract class AppDatabase : RoomDatabase() {
 
             Log.d(TAG, "initializing Database")
 
-            // candidate Insert
-            val idCandidate1 = candidateDao.insertCandidate(
-                CandidateDto(
-                    id = 1,
-                    firstName = "John",
-                    lastName = "Doe",
-                    photo = BitmapUtils.create(400, 400),
-                    phoneNumber = "123456789",
-                    email = "john.doe@email.com",
-                    dateOfBirth = Instant.now(),
-                    expectedSalary = 1000,
-                    note = "ma note",
-                    isFavorite = false
-                )
-            )
+            // Collecte le Flow pour obtenir la liste des candidats
+            val candidates = candidateDao.getAllCandidates().firstOrNull()
 
-            Log.d(TAG, "Candidate 1 inserted with id $idCandidate1")
-
-
+            // Vérifiez si la liste est vide
+            if (candidates.isNullOrEmpty()) {
+                Log.d(TAG, "Adding initial candidates")
+                val fakeCandidates = FakeCandidatesProvider.getFakeCandidates()
+                candidateDao.insertCandidates(fakeCandidates)
+                Log.d(TAG, "Initial candidates added")
+            } else {
+                Log.d(TAG, "Candidates already exist, skipping initialization")
+            }
         }
     }
 

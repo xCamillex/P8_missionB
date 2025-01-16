@@ -24,7 +24,25 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.util.Calendar
 
-
+/**
+ * Fragment permettant d'ajouter ou d'éditer les informations d'un candidat.
+ * Ce fragment gère l'UI, la collecte des informations saisies par l'utilisateur,
+ * ainsi que la communication avec le ViewModel pour effectuer des actions comme l'ajout ou la mise
+ * à jour d'un candidat.
+ *
+ * Fonctionnalités :
+ * - Sélection d'une photo depuis la galerie.
+ * - Sélection de la date de naissance via un DatePicker.
+ * - Validation des champs obligatoires et envoi des données au ViewModel pour sauvegarde.
+ * - Observation de l'état du ViewModel pour mettre à jour l'UI en fonction des résultats
+ * (chargement, succès, erreur).
+ *
+ * Composants utilisés :
+ * - `AddOrEditScreenViewModel` pour gérer l'état et les actions liées au candidat.
+ * - `ActivityResultContracts.GetContent()` pour sélectionner une image depuis la galerie.
+ * - `DatePickerDialog` pour choisir une date de naissance.
+ * - `StateFlow` pour observer et réagir aux changements d'état dans le ViewModel.
+ */
 @AndroidEntryPoint
 class AddOrEditScreenFragment : Fragment() {
 
@@ -63,7 +81,6 @@ class AddOrEditScreenFragment : Fragment() {
         _binding = FragmentAddOrEditScreenBinding.inflate(inflater, container, false)
         return binding.root
     }
-
 
     /**
      * Appelé lorsque la vue est créée.

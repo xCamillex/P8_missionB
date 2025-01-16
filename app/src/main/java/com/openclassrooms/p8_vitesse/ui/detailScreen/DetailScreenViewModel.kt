@@ -131,7 +131,6 @@ class DetailScreenViewModel @Inject constructor(
         }
     }
 
-
     /**
      * Calcule l'âge du candidat à partir de sa date de naissance.
      *
@@ -158,7 +157,6 @@ class DetailScreenViewModel @Inject constructor(
             ?: "Date invalide"
     }
 
-
     /**
      * Conversion du salaire en livres.
      * @param salaryInEuros Le salaire en euros.
@@ -178,8 +176,14 @@ class DetailScreenViewModel @Inject constructor(
                 // Utilisez le mécanisme pour notifier l'UI si nécessaire
                 _uiState.value = when (val currentState = _uiState.value) {
                     is DetailUiState.Success -> {
-                        currentState.copy(convertedSalary = String.format("soit £ %.2f", convertedSalary))
+                        currentState.copy(
+                            convertedSalary = String.format(
+                                "soit £ %.2f",
+                                convertedSalary
+                            )
+                        )
                     }
+
                     else -> currentState
                 }
             } catch (e: Exception) {
