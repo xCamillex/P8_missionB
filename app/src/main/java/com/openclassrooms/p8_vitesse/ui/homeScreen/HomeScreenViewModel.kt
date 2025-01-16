@@ -5,9 +5,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.openclassrooms.p8_vitesse.R
+import com.openclassrooms.p8_vitesse.data.dao.CandidateDao
 import com.openclassrooms.p8_vitesse.domain.model.Candidate
 import com.openclassrooms.p8_vitesse.domain.usecase.GetCandidatesUseCase
 import com.openclassrooms.p8_vitesse.domain.usecase.UpdateFavoriteStatusUseCase
+import com.openclassrooms.p8_vitesse.utils.BitmapUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.threeten.bp.Instant
 import javax.inject.Inject
 
 /**
@@ -28,7 +31,8 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val getCandidateUseCase: GetCandidatesUseCase, // Cas d'utilisation pour récupérer les candidats
     private val updateFavoriteStatusUseCase: UpdateFavoriteStatusUseCase, // Cas d'utilisation pour mettre à jour les favoris
-    @ApplicationContext private val context: Context // Contexte de l'application pour l'accès aux ressources
+    @ApplicationContext private val context: Context, // Contexte de l'application pour l'accès aux ressources
+    private val candidateDao: CandidateDao
 ) : ViewModel() {
 
     // État de l'écran d'accueil, gère les différents états de l'UI (chargement, succès, erreur, vide)
@@ -107,6 +111,51 @@ class HomeScreenViewModel @Inject constructor(
                 _uiState.value =
                     HomeUiState.Error(context.getString(R.string.favorite_status_update_error))
             }
+        }
+    }
+    fun addFakeCandidates() {
+        viewModelScope.launch {
+            // Création de la liste de faux candidats
+            val fakeCandidates = listOf(
+                Candidate(id = 1L,
+                    firstName = "John",
+                    lastName = "Doe",
+                    photo = BitmapUtils.create(400, 400),
+                    phoneNumber = "123456789",
+                    email = "john.doe@email.com",
+                    dateOfBirth = Instant.now(),
+                    expectedSalary = 3000,
+                    note = "ma note",
+                    isFavorite = false),
+
+                Candidate(id = 2L,
+                    firstName = "Jane",
+                    lastName = "Smith",
+                    photo = BitmapUtils.create(400, 400),
+                    phoneNumber = "987654321",
+                    email = "jane.smith@email.com",
+                    dateOfBirth = Instant.now().minusSeconds(1000000000),
+                    expectedSalary = 3500,
+                    note = "ma note",
+                    isFavorite = true),
+
+                Candidate( id = 3L,
+                    firstName = "Alice",
+                    lastName = "Johnson",
+                    photo = BitmapUtils.create(400, 400),
+                    phoneNumber = "555123456",
+                    email = "alice.johnson@email.com",
+                    dateOfBirth = Instant.now().minusSeconds(2000000000),
+                    expectedSalary = 3250,
+                    note = "Ma note",
+                    isFavorite = false)
+            )
+
+            // Insertion des faux candidats dans la base de données
+            candidateDao.insertCandidates(fakeCandidates.map { it.toDto() }) // Conversion en CandidateDto si nécessaire
+
+            // Mise à jour de l'état de l'UI avec la nouvelle liste
+            _uiState.value = HomeUiState.Success(fakeCandidates)
         }
     }
 }

@@ -65,6 +65,6 @@
     <string name="delete_error_message">Error deleting candidate</string>
     <string name="generic_error_message">An unknown error has occurred</string>
     <string name="favorite_status_update_error">Failed to update favorite status</string>
-
+    <string name="add_fake_candidate">Add fake candidate</string>
 
 </resources>

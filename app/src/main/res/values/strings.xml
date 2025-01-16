@@ -67,5 +67,6 @@
     <string name="delete_error_message">Erreur lors de la suppression du candidat</string>
     <string name="generic_error_message">Une erreur inconnue s est produite</string>
     <string name="favorite_status_update_error">Échec de la mise à jour du statut favori</string>
+    <string name="add_fake_candidate">Ajout de candidats fictif</string>
 
 </resources>

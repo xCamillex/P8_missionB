@@ -67,6 +67,11 @@ class HomeScreenFragment : Fragment() {
         // Charger les candidats initiaux
         viewModel.loadCandidates()
 
+        // Ajouter des faux candidats lorsque le bouton est cliqué
+        binding.addFakeCandidatesButton.setOnClickListener {
+            viewModel.addFakeCandidates()
+        }
+
         // Configuration du Floating Action Button (FAB) pour naviguer vers l'écran d'ajout/modification
         binding.fabAddCandidate.setOnClickListener {
             navigateToAddEditFragment()
