@@ -57,7 +57,7 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
-    implementation ("androidx.room:room-testing:2.6.1")
+    implementation("androidx.room:room-testing:2.6.1")
 
     //Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
@@ -66,7 +66,7 @@ dependencies {
 
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.google.code.gson:gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
@@ -86,7 +86,7 @@ dependencies {
     implementation(kotlin("script-runtime"))
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
     // Java 8 Time (Instant)
     implementation(libs.jakewharton.threetenabp)
@@ -100,9 +100,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.2")
 
-
 }
 kapt {
-
     correctErrorTypes = true
 }
