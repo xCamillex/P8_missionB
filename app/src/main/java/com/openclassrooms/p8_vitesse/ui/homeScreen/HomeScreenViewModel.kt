@@ -1,6 +1,7 @@
 package com.openclassrooms.p8_vitesse.ui.homeScreen
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -115,39 +116,77 @@ class HomeScreenViewModel @Inject constructor(
     }
     fun addFakeCandidates() {
         viewModelScope.launch {
+            // Récupération de l'image depuis le dossier drawable
+            val photoJohn = BitmapFactory.decodeResource(context.resources, R.drawable.homme1)
+            val photoJane = BitmapFactory.decodeResource(context.resources, R.drawable.femme1)
+            val photoAlice = BitmapFactory.decodeResource(context.resources, R.drawable.femme2)
+
             // Création de la liste de faux candidats
             val fakeCandidates = listOf(
                 Candidate(id = 1L,
                     firstName = "John",
                     lastName = "Doe",
-                    photo = BitmapUtils.create(400, 400),
+                    photo = photoJohn,
                     phoneNumber = "123456789",
                     email = "john.doe@email.com",
-                    dateOfBirth = Instant.now(),
+                    dateOfBirth = Instant.now().minusSeconds(1200000000),
                     expectedSalary = 3000,
-                    note = "ma note",
+                    note = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis " +
+                            "praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias " +
+                            "excepturi sint occaecati cupiditate non provident, similique sunt in culpa " +
+                            "qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum " +
+                            "quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum " +
+                            "soluta nobis est eligendi optio cumque nihil impedit quo minus id quod " +
+                            "maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor " +
+                            "repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum " +
+                            "necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae " +
+                            "non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut " +
+                            "reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus " +
+                            "asperiores repellat.",
                     isFavorite = false),
 
                 Candidate(id = 2L,
                     firstName = "Jane",
                     lastName = "Smith",
-                    photo = BitmapUtils.create(400, 400),
+                    photo = photoJane,
                     phoneNumber = "987654321",
                     email = "jane.smith@email.com",
-                    dateOfBirth = Instant.now().minusSeconds(1000000000),
+                    dateOfBirth = Instant.now().minusSeconds(900000000),
                     expectedSalary = 3500,
-                    note = "ma note",
+                    note = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis " +
+                            "praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias " +
+                            "excepturi sint occaecati cupiditate non provident, similique sunt in culpa " +
+                            "qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum " +
+                            "quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum " +
+                            "soluta nobis est eligendi optio cumque nihil impedit quo minus id quod " +
+                            "maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor " +
+                            "repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum " +
+                            "necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae " +
+                            "non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut " +
+                            "reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus " +
+                            "asperiores repellat.",
                     isFavorite = true),
 
                 Candidate( id = 3L,
                     firstName = "Alice",
                     lastName = "Johnson",
-                    photo = BitmapUtils.create(400, 400),
+                    photo = photoAlice,
                     phoneNumber = "555123456",
                     email = "alice.johnson@email.com",
-                    dateOfBirth = Instant.now().minusSeconds(2000000000),
+                    dateOfBirth = Instant.now().minusSeconds(1050000000),
                     expectedSalary = 3250,
-                    note = "Ma note",
+                    note = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis " +
+                            "praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias " +
+                            "excepturi sint occaecati cupiditate non provident, similique sunt in culpa " +
+                            "qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum " +
+                            "quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum " +
+                            "soluta nobis est eligendi optio cumque nihil impedit quo minus id quod " +
+                            "maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor " +
+                            "repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum " +
+                            "necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae " +
+                            "non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut " +
+                            "reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus " +
+                            "asperiores repellat.",
                     isFavorite = false)
             )
 
