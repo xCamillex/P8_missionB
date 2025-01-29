@@ -20,10 +20,12 @@ import org.mockito.junit.MockitoJUnitRunner
 class UpdateCandidateUseCaseTest {
 
     // Mock du dépôt pour simuler les opérations de mise à jour des candidats
-    @Mock lateinit var candidateRepository: CandidateRepository
+    @Mock
+    lateinit var candidateRepository: CandidateRepository
 
     // Mock d'un candidat pour effectuer les tests
-    @Mock lateinit var candidate: Candidate
+    @Mock
+    lateinit var candidate: Candidate
 
     // Instance de la classe à tester : UpdateCandidateUseCase
     private lateinit var updateCandidateUseCase: UpdateCandidateUseCase
@@ -35,7 +37,8 @@ class UpdateCandidateUseCaseTest {
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this) // Initialisation des objets mockés
-        updateCandidateUseCase = UpdateCandidateUseCase(candidateRepository) // Instanciation de l'UseCase à tester
+        updateCandidateUseCase =
+            UpdateCandidateUseCase(candidateRepository) // Instanciation de l'UseCase à tester
     }
 
     /**
@@ -51,15 +54,15 @@ class UpdateCandidateUseCaseTest {
     @Test
     fun `test updateCandidate success`() = runBlocking {
         // Arrange
-        val candidateToUpdate = Candidate(id = 1L, firstName = "John", lastName = "Doe", isFavorite = false)
-        `when`(candidateRepository.updateCandidate(candidateToUpdate)).thenReturn(true) // Simule un succès
+        val candidateToUpdate =
+            Candidate(id = 1L, firstName = "John", lastName = "Doe", isFavorite = false)
+        `when`(candidateRepository.updateCandidate(candidateToUpdate)).thenReturn(1) // Simule un succès
 
         // Act
-        val result = updateCandidateUseCase.execute(candidateToUpdate)
+        val result = updateCandidateUseCase.invoke(candidateToUpdate)
 
         // Assert
-        assertTrue(result) // Vérifie que le résultat est vrai (mise à jour réussie)
-        verify(candidateRepository).updateCandidate(candidateToUpdate) // Vérifie que la méthode a bien été appelée avec les bons paramètres
+        assertEquals(1, result) // Vérifie que le résultat est vrai (mise à jour réussie)
     }
 
     /**
@@ -74,18 +77,21 @@ class UpdateCandidateUseCaseTest {
     @Test
     fun `test updateCandidate failure`() = runBlocking {
         // Arrange
-        val candidateToUpdate = Candidate(id = 1L, firstName = "John", lastName = "Doe", isFavorite = false)
+        val candidateToUpdate =
+            Candidate(id = 1L, firstName = "John", lastName = "Doe", isFavorite = false)
         `when`(candidateRepository.updateCandidate(candidateToUpdate)).thenThrow(RuntimeException("Database error")) // Simule une erreur de base de données
 
         // Act
         try {
-            updateCandidateUseCase.execute(candidateToUpdate)
+            updateCandidateUseCase.invoke(candidateToUpdate)
             fail("Exception should have been thrown") // Si la méthode ne lance pas l'exception, le test échoue
         } catch (e: Exception) {
             // Assert
             assertTrue(e is RuntimeException) // Vérifie que l'exception est une RuntimeException
-            assertEquals("Database error", e.message) // Vérifie que le message de l'exception est correct
+            assertEquals(
+                "Database error",
+                e.message
+            ) // Vérifie que le message de l'exception est correct
         }
     }
 }
-

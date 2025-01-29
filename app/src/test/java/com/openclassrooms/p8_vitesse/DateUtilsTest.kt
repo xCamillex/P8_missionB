@@ -5,7 +5,7 @@ import junit.framework.TestCase.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import java.time.Instant
+import org.threeten.bp.Instant
 import java.util.Locale
 
 @RunWith(MockitoJUnitRunner::class)

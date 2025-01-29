@@ -249,7 +249,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="22dp"
                         android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="32dp"
+                        android:layout_marginBottom="42dp"
                         android:text="At vero eos et accusamus et iusto odio dignissimos ducimus qui
                         blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
                         cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga.

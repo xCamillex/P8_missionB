@@ -21,6 +21,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+/**
+ * Classe DetailScreenFragment
+ * Ce fragment affiche les détails d'un candidat, permettant de voir ses informations, de l'éditer,
+ * de le supprimer ou de le marquer comme favori. Il utilise un ViewModel pour gérer l'état et
+ * les interactions avec la source de données.
+ **/
+
 @AndroidEntryPoint
 class DetailScreenFragment : Fragment() {
 
@@ -82,7 +89,8 @@ class DetailScreenFragment : Fragment() {
             showDeleteConfirmationDialog()
         }
         deleteIcon.setOnLongClickListener {
-            Toast.makeText(requireContext(), getString(R.string.delete_icon), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.delete_icon), Toast.LENGTH_SHORT)
+                .show()
             true
         }
 
@@ -99,7 +107,8 @@ class DetailScreenFragment : Fragment() {
                 .commit()
         }
         editIcon.setOnLongClickListener {
-            Toast.makeText(requireContext(), getString(R.string.edit_icon), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.edit_icon), Toast.LENGTH_SHORT)
+                .show()
             true
         }
 
@@ -108,7 +117,8 @@ class DetailScreenFragment : Fragment() {
             viewModel.toggleFavoriteStatus(getString(R.string.favorite_status_error))
         }
         favoriteIcon.setOnLongClickListener {
-            Toast.makeText(requireContext(), getString(R.string.favorite_icon), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.favorite_icon), Toast.LENGTH_SHORT)
+                .show()
             true
         }
     }
@@ -124,15 +134,18 @@ class DetailScreenFragment : Fragment() {
                         is DetailUiState.Loading -> {
                             showLoading(true)
                         }
+
                         is DetailUiState.Success -> {
                             showLoading(false)
                             // Convertir le salaire
                             viewModel.convertSalaryToPounds(state.candidate.expectedSalary)
                             updateUIWithCandidate(state.candidate, state.convertedSalary)
                         }
+
                         is DetailUiState.Error -> {
                             showLoading(false)
-                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }
@@ -152,7 +165,8 @@ class DetailScreenFragment : Fragment() {
         binding.topAppBar.title = "${candidate.firstName} ${candidate.lastName}"
 
         // Icône favori
-        val favoriteIcon = binding.topAppBar.findViewById<android.widget.ImageView>(R.id.favorite_icon)
+        val favoriteIcon =
+            binding.topAppBar.findViewById<android.widget.ImageView>(R.id.favorite_icon)
         if (candidate.isFavorite) {
             favoriteIcon.setImageResource(R.drawable.ic_star_filled)
         } else {
@@ -201,8 +215,9 @@ class DetailScreenFragment : Fragment() {
 
         // Email
         contactBinding.contactEmailButton.setOnClickListener {
-            val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", candidate.email, null))
-            startActivity(Intent.createChooser(emailIntent,  getString(R.string.send_email)))
+            val emailIntent =
+                Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", candidate.email, null))
+            startActivity(Intent.createChooser(emailIntent, getString(R.string.send_email)))
         }
     }
 

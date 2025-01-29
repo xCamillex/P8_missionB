@@ -29,7 +29,7 @@ object DateUtils {
         if (instant == null) return null
 
         // Convertir l'Instant en ZonedDateTime en utilisant le fuseau horaire système par défaut
-        val zdt = instant.atZone(ZoneId.systemDefault())
+        val zdt = instant.atZone(ZoneId.of("UTC"))
 
         // Définir le format de la date en fonction de la langue
         val dateFormat = when (locale.language) {
